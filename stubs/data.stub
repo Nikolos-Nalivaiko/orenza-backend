@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use App\DataTransferObjects\BaseData;
+
+final class {{ class }} extends BaseData
+{
+    public function __construct(
+        //
+    ) {}
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    public static function fromArray(array $attributes): static
+    {
+        return new self(
+            //
+        );
+    }
+}

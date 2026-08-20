@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use App\Actions\Contracts\Action;
+
+final readonly class {{ class }} implements Action
+{
+    public function __construct() {}
+
+    public function handle(): void
+    {
+        //
+    }
+}
