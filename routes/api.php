@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,6 +32,6 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     });
 
     Route::middleware('auth:sanctum')->group(function (): void {
-        //
+        Route::post('workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
     });
 });
