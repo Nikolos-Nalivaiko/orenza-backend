@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,12 +15,20 @@ use Illuminate\Support\Facades\Route;
 | заводится только тогда, когда реально появится вторая версия и старую
 | нужно будет поддерживать параллельно.
 |
-| Публичные маршруты — здесь, приватные — внутри группы auth:sanctum.
-|
 */
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
-    //
+    Route::prefix('auth')->name('auth.')->group(function (): void {
+        Route::middleware('throttle:auth')->group(function (): void {
+            Route::post('register', [AuthController::class, 'register'])->name('register');
+            Route::post('login', [AuthController::class, 'login'])->name('login');
+        });
+
+        Route::middleware('auth:sanctum')->group(function (): void {
+            Route::get('me', [AuthController::class, 'me'])->name('me');
+            Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+        });
+    });
 
     Route::middleware('auth:sanctum')->group(function (): void {
         //
