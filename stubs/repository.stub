@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use {{ modelNamespace }};
+use App\Repositories\Contracts\{{ interface }};
+
+/**
+ * @extends BaseRepository<{{ model }}>
+ */
+final class {{ class }} extends BaseRepository implements {{ interface }}
+{
+    /**
+     * @return class-string<{{ model }}>
+     */
+    protected function model(): string
+    {
+        return {{ model }}::class;
+    }
+}

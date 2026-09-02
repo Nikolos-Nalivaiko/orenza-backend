@@ -1,0 +1,139 @@
+name: orenza
+
+# ВАЖНО: настройки приложения (DB_*, CACHE_STORE, QUEUE_CONNECTION и т.п.)
+# здесь задавать нельзя. В CLI переменные окружения попадают в $_SERVER, откуда
+# Laravel читает их в первую очередь — они перекрыли бы значения из phpunit.xml,
+# и тесты пошли бы по базе разработки. Конфигурация приложения живёт в .env
+# (там уже указаны контейнерные хосты postgres/redis/mailpit), а здесь остаётся
+# только то, что нужно самому контейнеру.
+x-app-env: &app-env
+  DB_WAIT_HOST: postgres
+  DB_WAIT_PORT: "5432"
+  DB_WAIT_USER: ${DB_USERNAME:-orenza}
+  XDEBUG_MODE: ${XDEBUG_MODE:-off}
+  PHP_IDE_CONFIG: serverName=orenza
+
+x-app-build: &app-build
+  context: .
+  dockerfile: docker/php/Dockerfile
+  target: ${APP_BUILD_TARGET:-development}
+  args:
+    PHP_VERSION: ${PHP_VERSION:-8.5}
+    UID: ${UID:-1000}
+    GID: ${GID:-1000}
+
+services:
+  app:
+    build: *app-build
+    image: orenza/app:dev
+    environment:
+      <<: *app-env
+      CONTAINER_ROLE: app
+      AUTO_MIGRATE: ${AUTO_MIGRATE:-true}
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(0);"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  web:
+    image: nginx:1.29-alpine
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - .:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-orenza}
+      POSTGRES_USER: ${DB_USERNAME:-orenza}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      - "${DB_FORWARD_PORT:-5432}:5432"
+    volumes:
+      # В образах postgres 18+ монтируется весь /var/lib/postgresql,
+      # данные лежат в подкаталоге с номером мажорной версии.
+      - postgres-data:/var/lib/postgresql
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-orenza} -d ${DB_DATABASE:-orenza}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_FORWARD_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  queue:
+    build: *app-build
+    image: orenza/app:dev
+    command: ["php", "artisan", "queue:work", "--tries=3", "--max-time=3600", "--sleep=1"]
+    environment:
+      <<: *app-env
+      CONTAINER_ROLE: queue
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      app:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    stop_signal: SIGTERM
+    stop_grace_period: 35s
+    restart: unless-stopped
+
+  scheduler:
+    build: *app-build
+    image: orenza/app:dev
+    command: ["php", "artisan", "schedule:work"]
+    environment:
+      <<: *app-env
+      CONTAINER_ROLE: scheduler
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      app:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    environment:
+      MP_MAX_MESSAGES: 500
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:
