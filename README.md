@@ -100,7 +100,24 @@ app/
 
 Версия задаётся префиксом URL (`/api/v1`), в пространствах имён её нет — см. раздел
 «Версионирование API» в [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Группы уже заведены
-в `routes/api.php`: публичная и под `auth:sanctum`; эндпоинтов пока нет.
+в `routes/api.php`: публичная и под `auth:sanctum`.
+
+## SPA
+
+Фронтенд (`orenza-frontend`) — отдельный origin: Vite слушает `http://localhost:3000`,
+API отвечает на `http://localhost:8080`. Что связывает их:
+
+- `FRONTEND_URL` в `.env` — список разрешённых origin'ов через запятую; из него
+  `config/cors.php` собирает `allowed_origins` для `api/*`. Куки не используются
+  (`supports_credentials => false`), SPA ходит с Bearer-токеном Sanctum;
+- `GET /api/v1/ping` (`HealthController`) — публичная проверка связи: имя стенда,
+  окружение, версия API и время. Клиент дёргает её на старте, чтобы отличить
+  «сервер недоступен» от «вы не вошли»;
+- на стороне SPA адрес лежит в `VITE_API_URL` (см. `orenza-frontend/.env.example`).
+
+```bash
+curl -H 'Origin: http://localhost:3000' http://localhost:8080/api/v1/ping
+```
 
 ## Тесты
 
