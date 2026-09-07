@@ -15,7 +15,7 @@ $origins = array_values(array_filter(array_map(
 
 return [
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'up'],
+    'paths' => ['api/*'],
 
     'allowed_methods' => ['*'],
 

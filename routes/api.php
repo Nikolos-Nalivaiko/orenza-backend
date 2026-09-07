@@ -23,6 +23,11 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     });
 
     Route::middleware('auth:sanctum')->group(function (): void {
-        Route::post('workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
+        Route::prefix('workspaces')->name('workspaces.')->group(function (): void {
+            Route::get('/', [WorkspaceController::class, 'index'])->name('index');
+            Route::post('/', [WorkspaceController::class, 'store'])->name('store');
+            Route::get('{workspace}', [WorkspaceController::class, 'show'])->name('show');
+            Route::put('{workspace}/current', [WorkspaceController::class, 'switch'])->name('switch');
+        });
     });
 });

@@ -37,7 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // App\Exceptions\DomainException produces.
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             return $request->is('api/*')
-                ? ApiResponse::error('Unauthenticated.', Response::HTTP_UNAUTHORIZED, 'unauthenticated')
+                ? ApiResponse::error(__('messages.auth.unauthenticated'), Response::HTTP_UNAUTHORIZED, 'unauthenticated')
                 : null;
         });
 
@@ -46,7 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthorizationException|AccessDeniedHttpException $e, Request $request) {
             return $request->is('api/*')
                 ? ApiResponse::error(
-                    $e->getMessage() !== '' ? $e->getMessage() : 'This action is unauthorized.',
+                    $e->getMessage() !== '' ? $e->getMessage() : __('messages.auth.forbidden'),
                     Response::HTTP_FORBIDDEN,
                     'forbidden',
                 )
@@ -55,19 +55,19 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (ModelNotFoundException $e, Request $request) {
             return $request->is('api/*')
-                ? ApiResponse::error('The requested resource was not found.', Response::HTTP_NOT_FOUND, 'not_found')
+                ? ApiResponse::error(__('messages.http.not_found'), Response::HTTP_NOT_FOUND, 'not_found')
                 : null;
         });
 
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             return $request->is('api/*')
-                ? ApiResponse::error('The requested resource was not found.', Response::HTTP_NOT_FOUND, 'not_found')
+                ? ApiResponse::error(__('messages.http.not_found'), Response::HTTP_NOT_FOUND, 'not_found')
                 : null;
         });
 
         $exceptions->render(function (TooManyRequestsHttpException $e, Request $request) {
             return $request->is('api/*')
-                ? ApiResponse::error('Too many requests.', Response::HTTP_TOO_MANY_REQUESTS, 'too_many_requests')
+                ? ApiResponse::error(__('messages.http.too_many_requests'), Response::HTTP_TOO_MANY_REQUESTS, 'too_many_requests')
                 : null;
         });
     })->create();

@@ -16,10 +16,7 @@ enum WorkspaceType: string implements HasLabel
 
     public function label(): string
     {
-        return match ($this) {
-            self::Personal => 'Личный',
-            self::Company => 'Компания',
-        };
+        return __("messages.enums.workspace_type.{$this->value}");
     }
 
     public function isPersonal(): bool

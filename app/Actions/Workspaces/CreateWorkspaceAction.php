@@ -25,7 +25,7 @@ final readonly class CreateWorkspaceAction implements Action
     {
         if ($data->type->isPersonal() && $this->workspaces->personalExistsFor($owner)) {
             throw BusinessRuleException::make(
-                'You already have a personal workspace.',
+                __('messages.workspaces.personal_exists'),
                 ['type' => $data->type->value],
             );
         }
@@ -33,7 +33,7 @@ final readonly class CreateWorkspaceAction implements Action
         $name = $data->name ?? ($data->type->isPersonal() ? $owner->full_name : null);
 
         if ($name === null || $name === '') {
-            throw BusinessRuleException::make('A company workspace requires a name.', ['name' => null]);
+            throw BusinessRuleException::make(__('messages.workspaces.name_required'), ['name' => null]);
         }
 
         $slug = $this->generateSlug->handle($name, $data->slug);

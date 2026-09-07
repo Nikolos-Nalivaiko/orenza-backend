@@ -6,6 +6,7 @@ namespace App\Repositories\Contracts;
 
 use App\Models\User;
 use App\Models\Workspace;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * @extends RepositoryInterface<Workspace>
@@ -13,6 +14,11 @@ use App\Models\Workspace;
 interface WorkspaceRepositoryInterface extends RepositoryInterface
 {
     public function findBySlug(string $slug): ?Workspace;
+
+    /**
+     * @return Collection<int, Workspace>
+     */
+    public function listForUser(User $user): Collection;
 
     public function slugExists(string $slug): bool;
 

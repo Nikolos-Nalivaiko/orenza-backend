@@ -25,7 +25,7 @@ final class AuthController extends Controller
         return ApiResponse::created([
             'user' => new UserResource($result['user']),
             'token' => $result['token'],
-        ], 'Registration completed.');
+        ], __('messages.auth.registered'));
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -35,7 +35,7 @@ final class AuthController extends Controller
         return ApiResponse::success([
             'user' => new UserResource($result['user']),
             'token' => $result['token'],
-        ], 'Signed in.');
+        ], __('messages.auth.signed_in'));
     }
 
     public function me(Request $request): JsonResponse
@@ -53,6 +53,6 @@ final class AuthController extends Controller
 
         $revoked = $this->auth->logout($user, $request->boolean('everywhere'));
 
-        return ApiResponse::success(['revoked_tokens' => $revoked], 'Signed out.');
+        return ApiResponse::success(['revoked_tokens' => $revoked], __('messages.auth.signed_out'));
     }
 }

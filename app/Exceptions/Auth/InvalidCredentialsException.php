@@ -15,6 +15,6 @@ final class InvalidCredentialsException extends DomainException
 
     public static function make(): self
     {
-        return new self('These credentials do not match our records.');
+        return new self(__('messages.auth.invalid_credentials'));
     }
 }

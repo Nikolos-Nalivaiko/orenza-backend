@@ -36,7 +36,7 @@ abstract class DomainException extends RuntimeException
      */
     public function __construct(string $message = '', array $context = [], ?Throwable $previous = null)
     {
-        parent::__construct($message !== '' ? $message : 'The request could not be processed.', 0, $previous);
+        parent::__construct($message !== '' ? $message : __('messages.http.server_error'), 0, $previous);
 
         $this->context = $context;
     }

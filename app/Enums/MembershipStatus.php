@@ -16,10 +16,7 @@ enum MembershipStatus: string implements HasLabel
 
     public function label(): string
     {
-        return match ($this) {
-            self::Active => 'Активен',
-            self::Suspended => 'Заблокирован',
-        };
+        return __("messages.enums.membership_status.{$this->value}");
     }
 
     public function color(): string

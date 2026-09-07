@@ -30,7 +30,7 @@ final class CreateWorkspaceTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonPath('data.type.value', 'company')
-            ->assertJsonPath('data.type.label', 'Компания')
+            ->assertJsonPath('data.type.label', 'Компанія')
             ->assertJsonPath('data.name', 'Оренза')
             ->assertJsonPath('data.slug', 'orenza')
             ->assertJsonPath('data.owner_id', $user->id);
