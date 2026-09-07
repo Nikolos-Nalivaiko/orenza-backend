@@ -45,6 +45,14 @@ class Workspace extends Model
     }
 
     /**
+     * @return HasMany<Client, $this>
+     */
+    public function clients(): HasMany
+    {
+        return $this->hasMany(Client::class);
+    }
+
+    /**
      * @return BelongsToMany<User, $this, Membership>
      */
     public function members(): BelongsToMany

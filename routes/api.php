@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\WorkspaceController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,14 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::post('/', [WorkspaceController::class, 'store'])->name('store');
             Route::get('{workspace}', [WorkspaceController::class, 'show'])->name('show');
             Route::put('{workspace}/current', [WorkspaceController::class, 'switch'])->name('switch');
+
+            Route::prefix('{workspace}/clients')->name('clients.')->scopeBindings()->group(function (): void {
+                Route::get('/', [ClientController::class, 'index'])->name('index');
+                Route::post('/', [ClientController::class, 'store'])->name('store');
+                Route::get('{client}', [ClientController::class, 'show'])->name('show');
+                Route::patch('{client}', [ClientController::class, 'update'])->name('update');
+                Route::delete('{client}', [ClientController::class, 'destroy'])->name('destroy');
+            });
         });
     });
 });

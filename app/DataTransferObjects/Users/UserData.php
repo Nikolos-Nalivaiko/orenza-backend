@@ -6,6 +6,7 @@ namespace App\DataTransferObjects\Users;
 
 use App\DataTransferObjects\BaseData;
 use App\Support\Optional;
+use App\Support\Phone;
 
 final class UserData extends BaseData
 {
@@ -33,7 +34,7 @@ final class UserData extends BaseData
 
     public static function normalisePhone(string $phone): string
     {
-        return (string) preg_replace('/(?!^\+)[^\d]/', '', trim($phone));
+        return Phone::normalise($phone);
     }
 
     /**

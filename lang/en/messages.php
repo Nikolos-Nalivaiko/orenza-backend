@@ -29,6 +29,13 @@ return [
         'slug_format' => 'The slug may contain lowercase letters, digits and single dashes only.',
     ],
 
+    'clients' => [
+        'created' => 'Client created.',
+        'updated' => 'Client updated.',
+        'deleted' => 'Client deleted.',
+        'name_required' => 'A client requires a name.',
+    ],
+
     'enums' => [
         'workspace_type' => [
             'personal' => 'Personal',
@@ -38,6 +45,10 @@ return [
             'owner' => 'Owner',
             'admin' => 'Administrator',
             'member' => 'Member',
+        ],
+        'client_type' => [
+            'person' => 'Person',
+            'company' => 'Company',
         ],
         'membership_status' => [
             'active' => 'Active',
