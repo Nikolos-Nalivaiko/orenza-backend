@@ -26,6 +26,7 @@ return [
         'personal_exists' => 'You already have a personal workspace.',
         'name_required' => 'A company workspace requires a name.',
         'not_a_member' => 'You are not a member of this workspace.',
+        'slug_format' => 'The slug may contain lowercase letters, digits and single dashes only.',
     ],
 
     'enums' => [

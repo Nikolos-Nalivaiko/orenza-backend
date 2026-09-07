@@ -43,8 +43,8 @@ final class StoreWorkspaceRequest extends ApiFormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'A company workspace requires a name.',
-            'slug.regex' => 'The slug may contain lowercase letters, digits and single dashes only.',
+            'name.required' => __('messages.workspaces.name_required'),
+            'slug.regex' => __('messages.workspaces.slug_format'),
         ];
     }
 
