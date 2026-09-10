@@ -47,6 +47,7 @@ return [
         'actual_start_first' => 'Set the actual start date first.',
         'actual_start_required' => 'The object is in progress — set the actual start date.',
         'actual_finish_required' => 'The object is done — set the actual finish date.',
+        'discount_once' => 'A discount is either a percentage or an amount, not both.',
     ],
 
     'materials' => [
@@ -62,6 +63,13 @@ return [
         'deleted' => 'Service removed.',
         'name_required' => 'A service requires a name.',
         'no_team' => 'A personal workspace has no performers.',
+    ],
+
+    'payments' => [
+        'created' => 'Payment added.',
+        'updated' => 'Payment updated.',
+        'deleted' => 'Payment removed.',
+        'name_required' => 'A payment requires a name.',
     ],
 
     'enums' => [
@@ -98,6 +106,12 @@ return [
             'planned' => 'Planned',
             'in_progress' => 'In progress',
             'done' => 'Done',
+        ],
+        'payment_status' => [
+            'pending' => 'Pending',
+            'paid' => 'Paid',
+            'overdue' => 'Overdue',
+            'cancelled' => 'Cancelled',
         ],
         'membership_status' => [
             'active' => 'Active',

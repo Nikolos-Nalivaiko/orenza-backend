@@ -7,12 +7,14 @@ namespace App\Providers;
 use App\Repositories\Contracts\ClientRepositoryInterface;
 use App\Repositories\Contracts\MaterialRepositoryInterface;
 use App\Repositories\Contracts\ObjectRepositoryInterface;
+use App\Repositories\Contracts\PaymentRepositoryInterface;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\WorkspaceRepositoryInterface;
 use App\Repositories\Eloquent\ClientRepository;
 use App\Repositories\Eloquent\MaterialRepository;
 use App\Repositories\Eloquent\ObjectRepository;
+use App\Repositories\Eloquent\PaymentRepository;
 use App\Repositories\Eloquent\ServiceRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Repositories\Eloquent\WorkspaceRepository;
@@ -37,6 +39,7 @@ final class RepositoryServiceProvider extends ServiceProvider
         ClientRepositoryInterface::class => ClientRepository::class,
         MaterialRepositoryInterface::class => MaterialRepository::class,
         ObjectRepositoryInterface::class => ObjectRepository::class,
+        PaymentRepositoryInterface::class => PaymentRepository::class,
         ServiceRepositoryInterface::class => ServiceRepository::class,
         UserRepositoryInterface::class => UserRepository::class,
         WorkspaceRepositoryInterface::class => WorkspaceRepository::class,

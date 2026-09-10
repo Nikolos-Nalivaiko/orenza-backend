@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'description',
     'address',
     'status',
+    'discount_percent',
+    'discount_amount',
     'started_at',
     'finished_at',
     'actual_started_at',
@@ -42,6 +44,8 @@ class ConstructionObject extends Model
     {
         return [
             'status' => ObjectStatus::class,
+            'discount_percent' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
             'started_at' => 'date',
             'finished_at' => 'date',
             'actual_started_at' => 'date',
@@ -80,6 +84,14 @@ class ConstructionObject extends Model
     public function services(): HasMany
     {
         return $this->hasMany(Service::class)->orderBy('id');
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class)->orderBy('id');
     }
 
     public function belongsToWorkspace(Workspace $workspace): bool

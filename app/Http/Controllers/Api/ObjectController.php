@@ -56,7 +56,7 @@ final class ObjectController extends Controller
     {
         $this->authorize('view', $workspace);
 
-        $object = $this->createObject->handle($workspace, $request->toData(), $request->materials(), $request->services());
+        $object = $this->createObject->handle($workspace, $request->toData(), $request->materials(), $request->services(), $request->payments());
 
         return ApiResponse::created(new ObjectResource($object), __('messages.objects.created'));
     }
@@ -65,7 +65,7 @@ final class ObjectController extends Controller
     {
         $this->authorize('view', $workspace);
 
-        return ApiResponse::success(new ObjectResource($object->load(['client', 'materials', 'services.workers'])));
+        return ApiResponse::success(new ObjectResource($object->load(['client', 'materials', 'services.workers', 'payments'])));
     }
 
     public function update(

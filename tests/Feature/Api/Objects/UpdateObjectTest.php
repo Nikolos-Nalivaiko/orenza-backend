@@ -163,6 +163,43 @@ final class UpdateObjectTest extends TestCase
         $this->assertNull($object->refresh()->archived_at);
     }
 
+    public function test_a_discount_is_kept_the_way_it_was_entered(): void
+    {
+        $object = $this->object();
+
+        $this->edit($object, ['discount_percent' => 5])
+            ->assertOk()
+            ->assertJsonPath('data.discount_percent', 5)
+            ->assertJsonPath('data.discount_amount', null);
+
+        $this->edit($object->refresh(), ['discount_percent' => null, 'discount_amount' => 120000])
+            ->assertOk()
+            ->assertJsonPath('data.discount_percent', null)
+            ->assertJsonPath('data.discount_amount', 120000);
+    }
+
+    public function test_a_discount_cannot_be_a_percentage_and_an_amount_at_once(): void
+    {
+        $object = $this->object();
+
+        $this->edit($object, ['discount_percent' => 5, 'discount_amount' => 120000])
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['discount_amount']]);
+
+        $this->edit($object, ['discount_percent' => 5])->assertOk();
+
+        $this->edit($object->refresh(), ['discount_amount' => 120000])
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['discount_amount']]);
+    }
+
+    public function test_a_percentage_above_a_hundred_is_rejected(): void
+    {
+        $this->edit($this->object(), ['discount_percent' => 120])
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['discount_percent']]);
+    }
+
     public function test_an_object_of_another_workspace_is_not_found(): void
     {
         $stranger = ConstructionObject::factory()->create();

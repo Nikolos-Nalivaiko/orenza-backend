@@ -312,6 +312,29 @@ final class CreateObjectTest extends TestCase
             ->assertJsonPath('data.services', []);
     }
 
+    public function test_an_object_is_created_together_with_its_payments(): void
+    {
+        $user = User::factory()->create();
+        $workspace = $this->workspaceFor($user);
+
+        $this->actingAs($user, 'sanctum')
+            ->postJson("/api/v1/workspaces/{$workspace->slug}/objects", $this->payload([
+                'discount_percent' => 5,
+                'payments' => [
+                    ['name' => 'Аванс', 'amount' => 100000, 'status' => 'paid', 'paid_at' => '2026-06-12'],
+                    ['name' => 'Доплата', 'amount' => 250000, 'status' => 'pending'],
+                ],
+            ]))
+            ->assertCreated()
+            ->assertJsonCount(2, 'data.payments')
+            ->assertJsonPath('data.discount_percent', 5)
+            ->assertJsonPath('data.payments.0.name', 'Аванс')
+            ->assertJsonPath('data.payments.0.paid_at', '2026-06-12')
+            ->assertJsonPath('data.payments.1.status.value', 'pending');
+
+        $this->assertDatabaseCount('payments', 2);
+    }
+
     public function test_an_unknown_status_is_rejected(): void
     {
         $user = User::factory()->create();

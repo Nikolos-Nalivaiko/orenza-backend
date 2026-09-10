@@ -16,6 +16,8 @@ final class ObjectData extends BaseData
         public readonly string|Optional $address = new Optional,
         public readonly int|null|Optional $clientId = new Optional,
         public readonly ObjectStatus|Optional $status = new Optional,
+        public readonly float|null|Optional $discountPercent = new Optional,
+        public readonly float|null|Optional $discountAmount = new Optional,
         public readonly string|null|Optional $startedAt = new Optional,
         public readonly string|null|Optional $finishedAt = new Optional,
         public readonly string|null|Optional $actualStartedAt = new Optional,
@@ -36,6 +38,8 @@ final class ObjectData extends BaseData
             status: self::pull($attributes, 'status', static fn (mixed $value): ObjectStatus => $value instanceof ObjectStatus
                 ? $value
                 : ObjectStatus::from((string) $value)),
+            discountPercent: self::pull($attributes, 'discount_percent', static fn (mixed $value): float => (float) $value),
+            discountAmount: self::pull($attributes, 'discount_amount', static fn (mixed $value): float => (float) $value),
             startedAt: self::pull($attributes, 'started_at', self::text(...)),
             finishedAt: self::pull($attributes, 'finished_at', self::text(...)),
             actualStartedAt: self::pull($attributes, 'actual_started_at', self::text(...)),

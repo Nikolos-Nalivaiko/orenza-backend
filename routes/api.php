@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\ObjectController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\WorkspaceController;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +63,13 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
                     Route::patch('status', [ServiceController::class, 'status'])->name('status');
                     Route::patch('{service}', [ServiceController::class, 'update'])->name('update');
                     Route::delete('{service}', [ServiceController::class, 'destroy'])->name('destroy');
+                });
+
+                Route::prefix('{object}/payments')->name('payments.')->group(function (): void {
+                    Route::get('/', [PaymentController::class, 'index'])->name('index');
+                    Route::post('/', [PaymentController::class, 'store'])->name('store');
+                    Route::patch('{payment}', [PaymentController::class, 'update'])->name('update');
+                    Route::delete('{payment}', [PaymentController::class, 'destroy'])->name('destroy');
                 });
             });
         });

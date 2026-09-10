@@ -49,6 +49,8 @@ abstract class ObjectRequest extends ApiFormRequest
                 }),
             ],
             'status' => ['sometimes', Rule::enum(ObjectStatus::class)],
+            'discount_percent' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:100'],
+            'discount_amount' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:999999999'],
             'started_at' => ['sometimes', 'nullable', 'date_format:Y-m-d'],
             'finished_at' => ['sometimes', 'nullable', 'date_format:Y-m-d'],
             'actual_started_at' => ['sometimes', 'nullable', 'date_format:Y-m-d'],
@@ -75,12 +77,13 @@ abstract class ObjectRequest extends ApiFormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
-            if ($validator->errors()->hasAny([...self::DAYS, 'status'])) {
+            if ($validator->errors()->hasAny([...self::DAYS, 'status', 'discount_percent', 'discount_amount'])) {
                 return;
             }
 
             $this->checkDates($validator);
             $this->checkStatus($validator);
+            $this->checkDiscount($validator);
         });
     }
 
@@ -116,6 +119,26 @@ abstract class ObjectRequest extends ApiFormRequest
         if ($status->isDone() && $this->day('actual_finished_at') === null) {
             $validator->errors()->add('actual_finished_at', __('messages.objects.actual_finish_required'));
         }
+    }
+
+    private function checkDiscount(Validator $validator): void
+    {
+        if ($this->discount('discount_percent') !== null && $this->discount('discount_amount') !== null) {
+            $validator->errors()->add('discount_amount', __('messages.objects.discount_once'));
+        }
+    }
+
+    private function discount(string $field): ?float
+    {
+        if ($this->has($field)) {
+            $value = $this->input($field);
+
+            return is_numeric($value) ? (float) $value : null;
+        }
+
+        $current = $this->object()?->{$field};
+
+        return $current === null ? null : (float) $current;
     }
 
     private function day(string $field): ?string

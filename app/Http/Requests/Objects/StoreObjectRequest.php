@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Requests\Objects;
 
 use App\DataTransferObjects\Materials\MaterialData;
+use App\DataTransferObjects\Payments\PaymentData;
 use App\DataTransferObjects\Services\ServiceData;
 use App\Http\Requests\Materials\MaterialRules;
+use App\Http\Requests\Payments\PaymentRules;
 use App\Http\Requests\Services\ServiceRules;
 
 final class StoreObjectRequest extends ObjectRequest
@@ -24,6 +26,8 @@ final class StoreObjectRequest extends ObjectRequest
             ...MaterialRules::all('materials.*'),
             'services' => ['sometimes', 'array', 'max:200'],
             ...ServiceRules::all('services.*'),
+            'payments' => ['sometimes', 'array', 'max:200'],
+            ...PaymentRules::all('payments.*'),
         ];
     }
 
@@ -47,5 +51,16 @@ final class StoreObjectRequest extends ObjectRequest
         $rows = $this->validated('services') ?? [];
 
         return array_map(ServiceData::fromArray(...), $rows);
+    }
+
+    /**
+     * @return array<int, PaymentData>
+     */
+    public function payments(): array
+    {
+        /** @var array<int, array<string, mixed>> $rows */
+        $rows = $this->validated('payments') ?? [];
+
+        return array_map(PaymentData::fromArray(...), $rows);
     }
 }

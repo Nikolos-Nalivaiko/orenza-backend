@@ -32,7 +32,7 @@ final class ObjectRepository extends BaseRepository implements ObjectRepositoryI
         ?ObjectStatus $status = null,
         bool $withArchived = false,
     ): Collection {
-        $query = $this->query()->with(['client', 'materials', 'services.workers'])->ofWorkspace($workspace);
+        $query = $this->query()->with(['client', 'materials', 'services.workers', 'payments'])->ofWorkspace($workspace);
 
         if (! $withArchived) {
             $query->notArchived();
