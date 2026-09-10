@@ -21,7 +21,7 @@ final class StoreClientRequest extends ApiFormRequest
             'type' => ['sometimes', Rule::enum(ClientType::class)],
             'name' => ['required', 'string', 'min:2', 'max:255'],
             'contact' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'phone' => ['sometimes', 'nullable', 'string', 'max:32'],
+            'phone' => ['required', 'string', 'max:32'],
             'email' => ['sometimes', 'nullable', 'string', 'email', 'max:255'],
             'notes' => ['sometimes', 'nullable', 'string', 'max:5000'],
             'discount' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:100'],
