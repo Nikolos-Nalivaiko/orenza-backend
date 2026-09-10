@@ -15,6 +15,11 @@ final class WorkspacePolicy
         return $this->activeMembership($user, $workspace) instanceof Membership;
     }
 
+    public function manageTeam(User $user, Workspace $workspace): bool
+    {
+        return $this->view($user, $workspace) && $workspace->type->hasTeam();
+    }
+
     private function activeMembership(User $user, Workspace $workspace): ?Membership
     {
         $membership = $workspace->membershipFor($user);

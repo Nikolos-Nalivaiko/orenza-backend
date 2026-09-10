@@ -29,6 +29,19 @@ enum WorkspaceType: string implements HasLabel
         return $this === self::Company;
     }
 
+    public function hasTeam(): bool
+    {
+        return $this === self::Company;
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    public function features(): array
+    {
+        return ['team' => $this->hasTeam()];
+    }
+
     public static function default(): self
     {
         return self::Personal;

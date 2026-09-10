@@ -24,6 +24,7 @@ final class WorkspaceResource extends JsonResource
                 'value' => $this->type->value,
                 'label' => $this->type->label(),
             ],
+            'features' => $this->type->features(),
             'name' => $this->name,
             'slug' => $this->slug,
             'owner_id' => $this->owner_id,
