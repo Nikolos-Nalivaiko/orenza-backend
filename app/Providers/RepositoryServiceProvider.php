@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Repositories\Contracts\ClientRepositoryInterface;
+use App\Repositories\Contracts\MaterialRepositoryInterface;
+use App\Repositories\Contracts\ObjectRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\WorkspaceRepositoryInterface;
 use App\Repositories\Eloquent\ClientRepository;
+use App\Repositories\Eloquent\MaterialRepository;
+use App\Repositories\Eloquent\ObjectRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Repositories\Eloquent\WorkspaceRepository;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +33,8 @@ final class RepositoryServiceProvider extends ServiceProvider
      */
     public array $bindings = [
         ClientRepositoryInterface::class => ClientRepository::class,
+        MaterialRepositoryInterface::class => MaterialRepository::class,
+        ObjectRepositoryInterface::class => ObjectRepository::class,
         UserRepositoryInterface::class => UserRepository::class,
         WorkspaceRepositoryInterface::class => WorkspaceRepository::class,
     ];

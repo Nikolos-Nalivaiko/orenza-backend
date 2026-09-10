@@ -53,6 +53,14 @@ class Workspace extends Model
     }
 
     /**
+     * @return HasMany<ConstructionObject, $this>
+     */
+    public function objects(): HasMany
+    {
+        return $this->hasMany(ConstructionObject::class);
+    }
+
+    /**
      * @return BelongsToMany<User, $this, Membership>
      */
     public function members(): BelongsToMany

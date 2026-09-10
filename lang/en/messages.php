@@ -36,6 +36,26 @@ return [
         'name_required' => 'A client requires a name.',
     ],
 
+    'objects' => [
+        'created' => 'Object created.',
+        'updated' => 'Object updated.',
+        'deleted' => 'Object deleted.',
+        'name_required' => 'An object requires a name.',
+        'address_required' => 'An object requires an address.',
+        'client_not_found' => 'This workspace has no such client.',
+        'finish_before_start' => 'The finish date is earlier than the start date.',
+        'actual_start_first' => 'Set the actual start date first.',
+        'actual_start_required' => 'The object is in progress — set the actual start date.',
+        'actual_finish_required' => 'The object is done — set the actual finish date.',
+    ],
+
+    'materials' => [
+        'created' => 'Material added.',
+        'updated' => 'Material updated.',
+        'deleted' => 'Material removed.',
+        'name_required' => 'A material requires a name.',
+    ],
+
     'enums' => [
         'workspace_type' => [
             'personal' => 'Personal',
@@ -49,6 +69,22 @@ return [
         'client_type' => [
             'person' => 'Person',
             'company' => 'Company',
+        ],
+        'object_status' => [
+            'planned' => 'Planned',
+            'in_progress' => 'In progress',
+            'paused' => 'Paused',
+            'done' => 'Done',
+        ],
+        'material_status' => [
+            'needed' => 'Needed',
+            'ordered' => 'Ordered',
+            'delivered' => 'Delivered',
+            'used' => 'Used',
+        ],
+        'material_buyer' => [
+            'contractor' => 'Contractor',
+            'client' => 'Client',
         ],
         'membership_status' => [
             'active' => 'Active',

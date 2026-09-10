@@ -36,6 +36,26 @@ return [
         'name_required' => 'Вкажіть, як звати замовника.',
     ],
 
+    'objects' => [
+        'created' => 'Обʼєкт створено.',
+        'updated' => 'Зміни збережено.',
+        'deleted' => 'Обʼєкт видалено.',
+        'name_required' => 'Вкажіть назву обʼєкта.',
+        'address_required' => 'Вкажіть адресу — без неї обʼєкт не знайти.',
+        'client_not_found' => 'Такого замовника у просторі немає.',
+        'finish_before_start' => 'Завершення раніше за початок.',
+        'actual_start_first' => 'Спочатку вкажіть фактичний початок.',
+        'actual_start_required' => 'Обʼєкт у роботі — вкажіть, коли фактично почали.',
+        'actual_finish_required' => 'Обʼєкт завершено — вкажіть фактичну дату здачі.',
+    ],
+
+    'materials' => [
+        'created' => 'Матеріал додано.',
+        'updated' => 'Зміни збережено.',
+        'deleted' => 'Матеріал прибрано.',
+        'name_required' => 'Вкажіть назву матеріалу.',
+    ],
+
     'enums' => [
         'workspace_type' => [
             'personal' => 'Особистий',
@@ -49,6 +69,22 @@ return [
         'client_type' => [
             'person' => 'Особа',
             'company' => 'Компанія',
+        ],
+        'object_status' => [
+            'planned' => 'Планується',
+            'in_progress' => 'В роботі',
+            'paused' => 'Призупинено',
+            'done' => 'Завершено',
+        ],
+        'material_status' => [
+            'needed' => 'Потрібно',
+            'ordered' => 'Замовлено',
+            'delivered' => 'Доставлено',
+            'used' => 'Використано',
+        ],
+        'material_buyer' => [
+            'contractor' => 'Підрядник',
+            'client' => 'Замовник',
         ],
         'membership_status' => [
             'active' => 'Активний',

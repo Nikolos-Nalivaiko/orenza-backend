@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ClientType;
+use App\Support\Collation;
 use Database\Factories\ClientFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable(['workspace_id', 'type', 'name', 'contact', 'phone', 'email', 'notes', 'discount'])]
@@ -36,6 +38,14 @@ class Client extends Model
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);
+    }
+
+    /**
+     * @return HasMany<ConstructionObject, $this>
+     */
+    public function objects(): HasMany
+    {
+        return $this->hasMany(ConstructionObject::class);
     }
 
     public function belongsToWorkspace(Workspace $workspace): bool
@@ -67,11 +77,12 @@ class Client extends Model
      */
     public function scopeSearch(Builder $query, string $term): Builder
     {
-        $needle = '%'.mb_strtolower(trim($term)).'%';
+        $needle = '%'.trim($term).'%';
+        $like = Collation::like($query);
 
-        return $query->where(function (Builder $inner) use ($needle): void {
+        return $query->where(function (Builder $inner) use ($needle, $like): void {
             foreach (['name', 'contact', 'phone', 'email'] as $column) {
-                $inner->orWhereRaw('lower('.self::collated($column, $inner).') like ?', [$needle]);
+                $inner->orWhere($column, $like, $needle);
             }
         });
     }
@@ -81,8 +92,6 @@ class Client extends Model
      */
     public static function collated(string $column, Builder $query): string
     {
-        return $query->getConnection()->getDriverName() === 'pgsql'
-            ? $column.' collate "und-x-icu"'
-            : $column;
+        return Collation::wrap($column, $query);
     }
 }

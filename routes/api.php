@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\MaterialController;
+use App\Http\Controllers\Api\ObjectController;
 use App\Http\Controllers\Api\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +38,22 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
                 Route::get('{client}', [ClientController::class, 'show'])->name('show');
                 Route::patch('{client}', [ClientController::class, 'update'])->name('update');
                 Route::delete('{client}', [ClientController::class, 'destroy'])->name('destroy');
+            });
+
+            Route::prefix('{workspace}/objects')->name('objects.')->scopeBindings()->group(function (): void {
+                Route::get('/', [ObjectController::class, 'index'])->name('index');
+                Route::post('/', [ObjectController::class, 'store'])->name('store');
+                Route::get('{object}', [ObjectController::class, 'show'])->name('show');
+                Route::patch('{object}', [ObjectController::class, 'update'])->name('update');
+                Route::delete('{object}', [ObjectController::class, 'destroy'])->name('destroy');
+
+                Route::prefix('{object}/materials')->name('materials.')->group(function (): void {
+                    Route::get('/', [MaterialController::class, 'index'])->name('index');
+                    Route::post('/', [MaterialController::class, 'store'])->name('store');
+                    Route::patch('status', [MaterialController::class, 'status'])->name('status');
+                    Route::patch('{material}', [MaterialController::class, 'update'])->name('update');
+                    Route::delete('{material}', [MaterialController::class, 'destroy'])->name('destroy');
+                });
             });
         });
     });

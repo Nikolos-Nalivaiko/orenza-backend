@@ -74,7 +74,6 @@ final class CreateClientTest extends TestCase
             ->assertJsonStructure(['errors' => ['phone']]);
     }
 
-    /** Правка картки лишається як була: старим замовникам номер не дописати. */
     public function test_an_existing_client_is_updated_without_touching_the_phone(): void
     {
         $user = User::factory()->create();
