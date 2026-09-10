@@ -54,9 +54,9 @@ final readonly class UpdateObjectAction implements Action
         }
 
         if ($attributes === []) {
-            return $object->load(['client', 'materials']);
+            return $object->load(['client', 'materials', 'services.workers']);
         }
 
-        return $this->objects->update($object, $attributes)->load(['client', 'materials']);
+        return $this->objects->update($object, $attributes)->load(['client', 'materials', 'services.workers']);
     }
 }

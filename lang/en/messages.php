@@ -56,6 +56,14 @@ return [
         'name_required' => 'A material requires a name.',
     ],
 
+    'services' => [
+        'created' => 'Service added.',
+        'updated' => 'Service updated.',
+        'deleted' => 'Service removed.',
+        'name_required' => 'A service requires a name.',
+        'no_team' => 'A personal workspace has no performers.',
+    ],
+
     'enums' => [
         'workspace_type' => [
             'personal' => 'Personal',
@@ -85,6 +93,11 @@ return [
         'material_buyer' => [
             'contractor' => 'Contractor',
             'client' => 'Client',
+        ],
+        'service_status' => [
+            'planned' => 'Planned',
+            'in_progress' => 'In progress',
+            'done' => 'Done',
         ],
         'membership_status' => [
             'active' => 'Active',

@@ -56,6 +56,14 @@ return [
         'name_required' => 'Вкажіть назву матеріалу.',
     ],
 
+    'services' => [
+        'created' => 'Роботу додано.',
+        'updated' => 'Зміни збережено.',
+        'deleted' => 'Роботу прибрано.',
+        'name_required' => 'Вкажіть назву роботи.',
+        'no_team' => 'В особистому просторі виконавців немає.',
+    ],
+
     'enums' => [
         'workspace_type' => [
             'personal' => 'Особистий',
@@ -85,6 +93,11 @@ return [
         'material_buyer' => [
             'contractor' => 'Підрядник',
             'client' => 'Замовник',
+        ],
+        'service_status' => [
+            'planned' => 'Заплановано',
+            'in_progress' => 'В роботі',
+            'done' => 'Виконано',
         ],
         'membership_status' => [
             'active' => 'Активний',

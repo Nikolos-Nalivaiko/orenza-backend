@@ -7,8 +7,10 @@ namespace App\Actions\Objects;
 use App\Actions\Contracts\Action;
 use App\Actions\Materials\CreateMaterialAction;
 use App\Actions\Objects\Concerns\LinksClient;
+use App\Actions\Services\CreateServiceAction;
 use App\DataTransferObjects\Materials\MaterialData;
 use App\DataTransferObjects\Objects\ObjectData;
+use App\DataTransferObjects\Services\ServiceData;
 use App\Enums\ObjectStatus;
 use App\Exceptions\BusinessRuleException;
 use App\Models\ConstructionObject;
@@ -25,13 +27,19 @@ final readonly class CreateObjectAction implements Action
         private ObjectRepositoryInterface $objects,
         private ClientRepositoryInterface $clients,
         private CreateMaterialAction $createMaterial,
+        private CreateServiceAction $createService,
     ) {}
 
     /**
      * @param  array<int, MaterialData>  $materials
+     * @param  array<int, ServiceData>  $services
      */
-    public function handle(Workspace $workspace, ObjectData $data, array $materials = []): ConstructionObject
-    {
+    public function handle(
+        Workspace $workspace,
+        ObjectData $data,
+        array $materials = [],
+        array $services = [],
+    ): ConstructionObject {
         $attributes = $data->toArray();
 
         $name = trim((string) ($attributes['name'] ?? ''));
@@ -56,7 +64,7 @@ final readonly class CreateObjectAction implements Action
             'client_id' => $this->clientFor($workspace->getKey(), $attributes['client_id'] ?? null),
         ];
 
-        $object = DB::transaction(function () use ($attributes, $materials): ConstructionObject {
+        $object = DB::transaction(function () use ($attributes, $materials, $services): ConstructionObject {
             $object = $this->objects->create([
                 ...$attributes,
                 'public_token' => $this->freeToken(),
@@ -66,10 +74,14 @@ final readonly class CreateObjectAction implements Action
                 $this->createMaterial->handle($object, $material);
             }
 
+            foreach ($services as $service) {
+                $this->createService->handle($object, $service);
+            }
+
             return $object;
         });
 
-        return $object->load(['client', 'materials']);
+        return $object->load(['client', 'materials', 'services.workers']);
     }
 
     private function freeToken(): string

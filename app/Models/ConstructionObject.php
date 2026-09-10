@@ -74,6 +74,14 @@ class ConstructionObject extends Model
         return $this->hasMany(Material::class)->orderBy('id');
     }
 
+    /**
+     * @return HasMany<Service, $this>
+     */
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class)->orderBy('id');
+    }
+
     public function belongsToWorkspace(Workspace $workspace): bool
     {
         return $this->workspace_id === $workspace->getKey();

@@ -34,6 +34,7 @@ final class ObjectResource extends JsonResource
             'actual_started_at' => $this->actual_started_at?->format('Y-m-d'),
             'actual_finished_at' => $this->actual_finished_at?->format('Y-m-d'),
             'materials' => MaterialResource::collection($this->materials)->resolve(),
+            'services' => ServiceResource::collection($this->services)->resolve(),
             'cover' => $this->cover_path,
             'public_token' => $this->public_token,
             'archived_at' => $this->archived_at?->toIso8601String(),

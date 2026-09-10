@@ -18,7 +18,7 @@ final class CreateObjectTest extends TestCase
 
     private function workspaceFor(User $user): Workspace
     {
-        $workspace = Workspace::factory()->ownedBy($user)->create();
+        $workspace = Workspace::factory()->company()->ownedBy($user)->create();
 
         Membership::factory()->forWorkspace($workspace)->forUser($user)->owner()->create();
 
@@ -272,6 +272,44 @@ final class CreateObjectTest extends TestCase
             ->postJson("/api/v1/workspaces/{$workspace->slug}/objects", $this->payload())
             ->assertCreated()
             ->assertJsonPath('data.materials', []);
+    }
+
+    public function test_an_object_is_created_together_with_its_works(): void
+    {
+        $user = User::factory()->create();
+        $workspace = $this->workspaceFor($user);
+
+        $this->actingAs($user, 'sanctum')
+            ->postJson("/api/v1/workspaces/{$workspace->slug}/objects", $this->payload([
+                'services' => [
+                    [
+                        'name' => 'Монолітні роботи',
+                        'unit' => 'м³',
+                        'planned_volume' => 120,
+                        'client_price' => 1000,
+                        'status' => 'planned',
+                        'workers' => [['employee_id' => 7, 'volume' => 120, 'rate' => 400]],
+                    ],
+                ],
+            ]))
+            ->assertCreated()
+            ->assertJsonCount(1, 'data.services')
+            ->assertJsonPath('data.services.0.name', 'Монолітні роботи')
+            ->assertJsonPath('data.services.0.workers.0.employee_id', 7);
+
+        $this->assertDatabaseCount('services', 1);
+        $this->assertDatabaseCount('service_workers', 1);
+    }
+
+    public function test_an_object_without_works_reports_an_empty_list(): void
+    {
+        $user = User::factory()->create();
+        $workspace = $this->workspaceFor($user);
+
+        $this->actingAs($user, 'sanctum')
+            ->postJson("/api/v1/workspaces/{$workspace->slug}/objects", $this->payload())
+            ->assertCreated()
+            ->assertJsonPath('data.services', []);
     }
 
     public function test_an_unknown_status_is_rejected(): void
