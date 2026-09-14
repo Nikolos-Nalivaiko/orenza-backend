@@ -18,6 +18,8 @@ RUN apk add --no-cache \
         tzdata \
     && install-php-extensions \
         bcmath \
+        exif \
+        gd \
         intl \
         opcache \
         pcntl \

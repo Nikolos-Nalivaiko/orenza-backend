@@ -38,7 +38,7 @@ final class ObjectResource extends JsonResource
             'discount_percent' => $this->discount_percent === null ? null : (float) $this->discount_percent,
             'discount_amount' => $this->discount_amount === null ? null : (float) $this->discount_amount,
             'payments' => PaymentResource::collection($this->payments)->resolve(),
-            'cover' => $this->cover_path,
+            'cover' => CoverResource::for($this->resource),
             'public_token' => $this->public_token,
             'archived_at' => $this->archived_at?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),

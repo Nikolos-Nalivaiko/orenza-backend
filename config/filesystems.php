@@ -30,6 +30,8 @@ return [
     |
     */
 
+    'media_disk' => env('MEDIA_DISK', 'media'),
+
     'disks' => [
 
         'local' => [
@@ -46,6 +48,15 @@ return [
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
+            'report' => false,
+        ],
+
+        'media' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/media'),
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage/media',
+            'visibility' => 'public',
+            'throw' => true,
             'report' => false,
         ],
 

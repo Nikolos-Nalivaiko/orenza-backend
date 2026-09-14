@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\ObjectController;
+use App\Http\Controllers\Api\ObjectCoverController;
+use App\Http\Controllers\Api\ObjectPhotoController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\TrackController;
@@ -63,6 +65,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
                 Route::patch('{object}', [ObjectController::class, 'update'])->name('update');
                 Route::delete('{object}', [ObjectController::class, 'destroy'])->name('destroy');
 
+                Route::prefix('{object}/cover')->name('cover.')->group(function (): void {
+                    Route::post('/', [ObjectCoverController::class, 'store'])->name('store');
+                    Route::patch('/', [ObjectCoverController::class, 'update'])->name('update');
+                    Route::delete('/', [ObjectCoverController::class, 'destroy'])->name('destroy');
+                });
+
                 Route::prefix('{object}/materials')->name('materials.')->group(function (): void {
                     Route::get('/', [MaterialController::class, 'index'])->name('index');
                     Route::post('/', [MaterialController::class, 'store'])->name('store');
@@ -77,6 +85,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
                     Route::patch('status', [ServiceController::class, 'status'])->name('status');
                     Route::patch('{service}', [ServiceController::class, 'update'])->name('update');
                     Route::delete('{service}', [ServiceController::class, 'destroy'])->name('destroy');
+                });
+
+                Route::prefix('{object}/photos')->name('photos.')->group(function (): void {
+                    Route::get('/', [ObjectPhotoController::class, 'index'])->name('index');
+                    Route::post('/', [ObjectPhotoController::class, 'store'])->name('store');
+                    Route::delete('{photo}', [ObjectPhotoController::class, 'destroy'])->name('destroy');
                 });
 
                 Route::prefix('{object}/payments')->name('payments.')->group(function (): void {

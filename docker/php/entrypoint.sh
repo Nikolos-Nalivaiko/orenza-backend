@@ -51,6 +51,11 @@ fi
 # Миграции и прогрев кешей нужны только при старте самого сервиса, а не при
 # разовых запусках вида `docker compose run --rm app php artisan ...`.
 if [[ "${ROLE}" == 'app' && "${1:-}" == 'php-fpm' ]]; then
+    if [[ ! -L public/storage ]]; then
+        log 'создаю ссылку public/storage'
+        php artisan storage:link --no-interaction
+    fi
+
     if [[ "${AUTO_MIGRATE:-false}" == 'true' ]]; then
         log 'применяю миграции'
         php artisan migrate --force --no-interaction

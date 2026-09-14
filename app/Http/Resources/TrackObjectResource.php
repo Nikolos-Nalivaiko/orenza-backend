@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Resources;
 
 use App\Enums\DueState;
+use App\Enums\PhotoVariant;
 use App\Models\ConstructionObject;
 use App\Models\Material;
+use App\Models\ObjectPhoto;
 use App\Models\Payment;
 use App\Models\Service;
+use App\Support\Media\PhotoStorage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -36,7 +39,7 @@ final class TrackObjectResource extends JsonResource
                 'value' => $this->status->value,
                 'label' => $this->status->label(),
             ],
-            'cover' => $this->cover_path,
+            'cover' => CoverResource::for($this->resource),
             'readiness' => $readiness === null ? null : round($readiness, 4),
             'works' => [
                 'done' => $this->completedServicesCount(),
@@ -86,6 +89,18 @@ final class TrackObjectResource extends JsonResource
                     'label' => $state->label(),
                 ],
             ],
+            'photos' => $this->photos
+                ->map(static fn (ObjectPhoto $photo): array => [
+                    'id' => $photo->id,
+                    'thumb' => app(PhotoStorage::class)->url($photo, PhotoVariant::Thumb),
+                    'full' => app(PhotoStorage::class)->url($photo, PhotoVariant::Full),
+                    'width' => $photo->width,
+                    'height' => $photo->height,
+                    'color' => $photo->color,
+                    'at' => $photo->moment()?->toIso8601String(),
+                ])
+                ->values()
+                ->all(),
             'payments' => $this->payments
                 ->reject(static fn (Payment $payment): bool => $payment->status->isCancelled())
                 ->map(static fn (Payment $payment): array => [

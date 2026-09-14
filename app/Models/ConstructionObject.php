@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Casts\AsCover;
 use App\Enums\ObjectStatus;
 use App\Support\Collation;
 use Database\Factories\ConstructionObjectFactory;
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'finished_at',
     'actual_started_at',
     'actual_finished_at',
-    'cover_path',
+    'cover',
     'public_token',
     'archived_at',
 ])]
@@ -51,6 +52,7 @@ class ConstructionObject extends Model
             'actual_started_at' => 'date',
             'actual_finished_at' => 'date',
             'archived_at' => 'datetime',
+            'cover' => AsCover::class,
         ];
     }
 
@@ -92,6 +94,16 @@ class ConstructionObject extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class)->orderBy('id');
+    }
+
+    /**
+     * @return HasMany<ObjectPhoto, $this>
+     */
+    public function photos(): HasMany
+    {
+        return $this->hasMany(ObjectPhoto::class)
+            ->orderByRaw('coalesce(taken_at, created_at) desc')
+            ->orderByDesc('id');
     }
 
     public function belongsToWorkspace(Workspace $workspace): bool

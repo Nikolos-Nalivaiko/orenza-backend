@@ -48,6 +48,10 @@ return [
         'actual_start_required' => 'The object is in progress — set the actual start date.',
         'actual_finish_required' => 'The object is done — set the actual finish date.',
         'discount_once' => 'A discount is either a percentage or an amount, not both.',
+        'cover_updated' => 'Cover updated.',
+        'cover_removed' => 'Cover removed.',
+        'cover_missing' => 'The object has no cover yet.',
+        'cover_unreadable' => 'The image could not be read. Try another file.',
     ],
 
     'materials' => [
@@ -70,6 +74,13 @@ return [
         'updated' => 'Payment updated.',
         'deleted' => 'Payment removed.',
         'name_required' => 'A payment requires a name.',
+    ],
+
+    'photos' => [
+        'created' => 'Photo added.',
+        'deleted' => 'Photo removed.',
+        'limit' => 'The object already has :max photos. Remove some to add new ones.',
+        'unreadable' => 'The image could not be read. Try another file.',
     ],
 
     'track' => [
