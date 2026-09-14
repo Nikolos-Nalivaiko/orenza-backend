@@ -6,6 +6,7 @@ namespace Tests\Feature\Api\Objects;
 
 use App\Models\Client;
 use App\Models\ConstructionObject;
+use App\Models\Employee;
 use App\Models\Material;
 use App\Models\Membership;
 use App\Models\Payment;
@@ -61,7 +62,9 @@ final class ShowObjectTest extends TestCase
         $service = Service::factory()->ofObject($object)->create(['name' => 'Мурування']);
         Payment::factory()->ofObject($object)->create();
 
-        $service->workers()->create(['employee_id' => 7, 'volume' => 120, 'rate' => 400]);
+        $employee = Employee::factory()->ofWorkspace($this->workspace)->create();
+
+        $service->workers()->create(['employee_id' => $employee->id, 'volume' => 120, 'rate' => 400]);
 
         $this->show($object)
             ->assertOk()
@@ -72,7 +75,7 @@ final class ShowObjectTest extends TestCase
             ->assertJsonPath('data.materials.0.name', 'Цегла')
             ->assertJsonCount(1, 'data.services')
             ->assertJsonPath('data.services.0.name', 'Мурування')
-            ->assertJsonPath('data.services.0.workers.0.employee_id', 7)
+            ->assertJsonPath('data.services.0.workers.0.employee_id', $employee->id)
             ->assertJsonCount(1, 'data.payments')
             ->assertJsonPath('data.public_token', $object->public_token);
     }

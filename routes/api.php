@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\ObjectController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\TrackController;
 use App\Http\Controllers\Api\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::get('ping', HealthController::class)->name('ping');
+
+    Route::get('track/{token}', TrackController::class)
+        ->middleware('throttle:track')
+        ->name('track');
 
     Route::prefix('auth')->name('auth.')->group(function (): void {
         Route::middleware('throttle:auth')->group(function (): void {
@@ -40,6 +46,14 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
                 Route::get('{client}', [ClientController::class, 'show'])->name('show');
                 Route::patch('{client}', [ClientController::class, 'update'])->name('update');
                 Route::delete('{client}', [ClientController::class, 'destroy'])->name('destroy');
+            });
+
+            Route::prefix('{workspace}/employees')->name('employees.')->scopeBindings()->group(function (): void {
+                Route::get('/', [EmployeeController::class, 'index'])->name('index');
+                Route::post('/', [EmployeeController::class, 'store'])->name('store');
+                Route::get('{employee}', [EmployeeController::class, 'show'])->name('show');
+                Route::patch('{employee}', [EmployeeController::class, 'update'])->name('update');
+                Route::delete('{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
             });
 
             Route::prefix('{workspace}/objects')->name('objects.')->scopeBindings()->group(function (): void {

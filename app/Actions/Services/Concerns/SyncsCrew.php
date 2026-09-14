@@ -8,7 +8,12 @@ use App\DataTransferObjects\Services\ServiceWorkerData;
 use App\Exceptions\BusinessRuleException;
 use App\Models\ConstructionObject;
 use App\Models\Service;
+use App\Models\Workspace;
+use App\Repositories\Contracts\EmployeeRepositoryInterface;
 
+/**
+ * @property-read EmployeeRepositoryInterface $employees
+ */
 trait SyncsCrew
 {
     /**
@@ -16,7 +21,7 @@ trait SyncsCrew
      */
     private function syncCrew(Service $service, ConstructionObject $object, array $crew): void
     {
-        $this->guardTeam($object, $crew);
+        $this->guardCrew($object, $crew);
 
         $rows = [];
 
@@ -36,7 +41,7 @@ trait SyncsCrew
     /**
      * @param  array<int, ServiceWorkerData>  $crew
      */
-    private function guardTeam(ConstructionObject $object, array $crew): void
+    private function guardCrew(ConstructionObject $object, array $crew): void
     {
         if ($crew === []) {
             return;
@@ -44,9 +49,19 @@ trait SyncsCrew
 
         $workspace = $object->workspace;
 
-        if ($workspace === null || ! $workspace->type->hasTeam()) {
+        if (! $workspace instanceof Workspace || ! $workspace->type->hasTeam()) {
             throw BusinessRuleException::make(
                 __('messages.services.no_team'),
+                ['workers' => null],
+            );
+        }
+
+        $ids = array_map(static fn (ServiceWorkerData $worker): int => $worker->employeeId, $crew);
+        $known = $this->employees->idsOfWorkspace($workspace, $ids);
+
+        if (array_diff(array_unique($ids), $known) !== []) {
+            throw BusinessRuleException::make(
+                __('messages.employees.not_in_team'),
                 ['workers' => null],
             );
         }

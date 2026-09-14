@@ -8,6 +8,7 @@ use App\Actions\Contracts\Action;
 use App\DataTransferObjects\Services\ServiceData;
 use App\Exceptions\BusinessRuleException;
 use App\Models\Service;
+use App\Repositories\Contracts\EmployeeRepositoryInterface;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +16,10 @@ final readonly class UpdateServiceAction implements Action
 {
     use Concerns\SyncsCrew;
 
-    public function __construct(private ServiceRepositoryInterface $services) {}
+    public function __construct(
+        private ServiceRepositoryInterface $services,
+        private EmployeeRepositoryInterface $employees,
+    ) {}
 
     public function handle(Service $service, ServiceData $data): Service
     {

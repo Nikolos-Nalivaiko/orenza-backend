@@ -30,6 +30,14 @@ class ServiceWorker extends Model
         return $this->belongsTo(Service::class);
     }
 
+    /**
+     * @return BelongsTo<Employee, $this>
+     */
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
     public function cost(): float
     {
         return (float) $this->volume * (float) $this->rate;

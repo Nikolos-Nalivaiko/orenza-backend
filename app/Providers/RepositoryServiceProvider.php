@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Repositories\Contracts\ClientRepositoryInterface;
+use App\Repositories\Contracts\EmployeeRepositoryInterface;
 use App\Repositories\Contracts\MaterialRepositoryInterface;
 use App\Repositories\Contracts\ObjectRepositoryInterface;
 use App\Repositories\Contracts\PaymentRepositoryInterface;
@@ -12,6 +13,7 @@ use App\Repositories\Contracts\ServiceRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\WorkspaceRepositoryInterface;
 use App\Repositories\Eloquent\ClientRepository;
+use App\Repositories\Eloquent\EmployeeRepository;
 use App\Repositories\Eloquent\MaterialRepository;
 use App\Repositories\Eloquent\ObjectRepository;
 use App\Repositories\Eloquent\PaymentRepository;
@@ -37,6 +39,7 @@ final class RepositoryServiceProvider extends ServiceProvider
      */
     public array $bindings = [
         ClientRepositoryInterface::class => ClientRepository::class,
+        EmployeeRepositoryInterface::class => EmployeeRepository::class,
         MaterialRepositoryInterface::class => MaterialRepository::class,
         ObjectRepositoryInterface::class => ObjectRepository::class,
         PaymentRepositoryInterface::class => PaymentRepository::class,

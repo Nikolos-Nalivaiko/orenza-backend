@@ -27,4 +27,6 @@ interface ObjectRepositoryInterface extends RepositoryInterface
     public function countForWorkspace(Workspace $workspace, bool $withArchived = false): int;
 
     public function tokenTaken(string $token): bool;
+
+    public function findByPublicToken(string $token): ?ConstructionObject;
 }

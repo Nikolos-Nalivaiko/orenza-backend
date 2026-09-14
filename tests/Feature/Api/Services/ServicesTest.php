@@ -6,6 +6,7 @@ namespace Tests\Feature\Api\Services;
 
 use App\Enums\ServiceStatus;
 use App\Models\ConstructionObject;
+use App\Models\Employee;
 use App\Models\Membership;
 use App\Models\Service;
 use App\Models\User;
@@ -24,6 +25,10 @@ final class ServicesTest extends TestCase
 
     private ConstructionObject $object;
 
+    private Employee $mason;
+
+    private Employee $painter;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -38,6 +43,9 @@ final class ServicesTest extends TestCase
             ->create();
 
         $this->object = ConstructionObject::factory()->ofWorkspace($this->workspace)->create();
+
+        $this->mason = Employee::factory()->ofWorkspace($this->workspace)->create();
+        $this->painter = Employee::factory()->ofWorkspace($this->workspace)->create();
     }
 
     private function path(string $tail = '', ?Workspace $workspace = null, ?ConstructionObject $object = null): string
@@ -94,16 +102,28 @@ final class ServicesTest extends TestCase
     public function test_a_work_is_added_with_its_crew(): void
     {
         $this->add(['workers' => [
-            ['employee_id' => 7, 'volume' => 80, 'rate' => 400],
-            ['employee_id' => 9, 'volume' => 40, 'rate' => 450],
+            ['employee_id' => $this->mason->id, 'volume' => 80, 'rate' => 400],
+            ['employee_id' => $this->painter->id, 'volume' => 40, 'rate' => 450],
         ]])
             ->assertCreated()
             ->assertJsonCount(2, 'data.workers')
-            ->assertJsonPath('data.workers.0.employee_id', 7)
+            ->assertJsonPath('data.workers.0.employee_id', $this->mason->id)
             ->assertJsonPath('data.workers.0.volume', 80)
             ->assertJsonPath('data.workers.1.rate', 450);
 
         $this->assertDatabaseCount('service_workers', 2);
+    }
+
+    public function test_a_performer_from_another_workspace_is_refused(): void
+    {
+        $stranger = Employee::factory()->create();
+
+        $this->add(['workers' => [['employee_id' => $stranger->id, 'volume' => 10, 'rate' => 100]]])
+            ->assertStatus(422)
+            ->assertJsonPath('error_code', 'business_rule_violation');
+
+        $this->assertDatabaseCount('service_workers', 0);
+        $this->assertDatabaseCount('services', 0);
     }
 
     public function test_a_personal_workspace_refuses_performers(): void
@@ -111,7 +131,7 @@ final class ServicesTest extends TestCase
         $object = $this->personalObject();
 
         $this->add(
-            ['workers' => [['employee_id' => 7, 'volume' => 10, 'rate' => 100]]],
+            ['workers' => [['employee_id' => $this->mason->id, 'volume' => 10, 'rate' => 100]]],
             $this->path('', $object->workspace, $object),
         )
             ->assertStatus(422)
@@ -136,18 +156,18 @@ final class ServicesTest extends TestCase
 
         $this->actingAs($this->user, 'sanctum')
             ->patchJson($this->path("/{$service->id}"), [
-                'workers' => [['employee_id' => 7, 'volume' => 50, 'rate' => 400]],
+                'workers' => [['employee_id' => $this->mason->id, 'volume' => 50, 'rate' => 400]],
             ])
             ->assertOk()
             ->assertJsonCount(1, 'data.workers');
 
         $this->actingAs($this->user, 'sanctum')
             ->patchJson($this->path("/{$service->id}"), [
-                'workers' => [['employee_id' => 9, 'volume' => 60, 'rate' => 500]],
+                'workers' => [['employee_id' => $this->painter->id, 'volume' => 60, 'rate' => 500]],
             ])
             ->assertOk()
             ->assertJsonCount(1, 'data.workers')
-            ->assertJsonPath('data.workers.0.employee_id', 9);
+            ->assertJsonPath('data.workers.0.employee_id', $this->painter->id);
 
         $this->assertDatabaseCount('service_workers', 1);
     }
@@ -158,7 +178,7 @@ final class ServicesTest extends TestCase
 
         $this->actingAs($this->user, 'sanctum')
             ->patchJson($this->path("/{$service->id}"), [
-                'workers' => [['employee_id' => 7, 'volume' => 50, 'rate' => 400]],
+                'workers' => [['employee_id' => $this->mason->id, 'volume' => 50, 'rate' => 400]],
             ])
             ->assertOk();
 
@@ -224,7 +244,7 @@ final class ServicesTest extends TestCase
 
         $this->actingAs($this->user, 'sanctum')
             ->patchJson($this->path("/{$service->id}"), [
-                'workers' => [['employee_id' => 7, 'volume' => 50, 'rate' => 400]],
+                'workers' => [['employee_id' => $this->mason->id, 'volume' => 50, 'rate' => 400]],
             ])
             ->assertOk();
 
@@ -251,7 +271,7 @@ final class ServicesTest extends TestCase
 
         $this->actingAs($this->user, 'sanctum')
             ->patchJson($this->path("/{$service->id}"), [
-                'workers' => [['employee_id' => 7, 'volume' => 50, 'rate' => 400]],
+                'workers' => [['employee_id' => $this->mason->id, 'volume' => 50, 'rate' => 400]],
             ])
             ->assertOk();
 
@@ -259,6 +279,6 @@ final class ServicesTest extends TestCase
             ->getJson("/api/v1/workspaces/{$this->workspace->slug}/objects/{$this->object->id}")
             ->assertOk()
             ->assertJsonPath('data.services.0.name', 'Мурування')
-            ->assertJsonPath('data.services.0.workers.0.employee_id', 7);
+            ->assertJsonPath('data.services.0.workers.0.employee_id', $this->mason->id);
     }
 }

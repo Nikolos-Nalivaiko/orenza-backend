@@ -72,6 +72,10 @@ return [
         'name_required' => 'A payment requires a name.',
     ],
 
+    'track' => [
+        'not_found' => 'Page is unavailable.',
+    ],
+
     'enums' => [
         'workspace_type' => [
             'personal' => 'Personal',
@@ -112,6 +116,12 @@ return [
             'paid' => 'Paid',
             'overdue' => 'Overdue',
             'cancelled' => 'Cancelled',
+        ],
+        'due_state' => [
+            'none' => 'Unpaid',
+            'partial' => 'Partially paid',
+            'paid' => 'Paid in full',
+            'over' => 'Overpaid',
         ],
         'membership_status' => [
             'active' => 'Active',

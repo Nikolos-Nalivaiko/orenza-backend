@@ -10,6 +10,7 @@ use App\Enums\ServiceStatus;
 use App\Exceptions\BusinessRuleException;
 use App\Models\ConstructionObject;
 use App\Models\Service;
+use App\Repositories\Contracts\EmployeeRepositoryInterface;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +18,10 @@ final readonly class CreateServiceAction implements Action
 {
     use Concerns\SyncsCrew;
 
-    public function __construct(private ServiceRepositoryInterface $services) {}
+    public function __construct(
+        private ServiceRepositoryInterface $services,
+        private EmployeeRepositoryInterface $employees,
+    ) {}
 
     public function handle(ConstructionObject $object, ServiceData $data): Service
     {

@@ -104,6 +104,80 @@ class ConstructionObject extends Model
         return $this->archived_at !== null;
     }
 
+    public function isFinished(): bool
+    {
+        return $this->status->isDone() || $this->actual_finished_at !== null;
+    }
+
+    public function grossRevenue(): float
+    {
+        return $this->materials->sum(static fn (Material $material): float => $material->revenue() ?? 0.0)
+            + $this->services->sum(static fn (Service $service): float => $service->revenue() ?? 0.0);
+    }
+
+    public function discountTotal(): float
+    {
+        $gross = $this->grossRevenue();
+
+        if ($this->discount_amount !== null) {
+            return min((float) $this->discount_amount, $gross);
+        }
+
+        if ($this->discount_percent === null) {
+            return 0.0;
+        }
+
+        return round($gross * min((float) $this->discount_percent, 100.0)) / 100;
+    }
+
+    public function clientTotal(): float
+    {
+        return $this->grossRevenue() - $this->discountTotal();
+    }
+
+    public function paidTotal(): float
+    {
+        return $this->payments
+            ->filter(static fn (Payment $payment): bool => $payment->status->isPaid())
+            ->sum(static fn (Payment $payment): float => (float) $payment->amount);
+    }
+
+    public function readiness(): ?float
+    {
+        if ($this->status->isDone()) {
+            return 1.0;
+        }
+
+        $planned = $this->services->sum(static fn (Service $service): float => (float) $service->planned_volume);
+
+        if ($planned <= 0) {
+            return null;
+        }
+
+        $done = $this->services->sum(static function (Service $service): float {
+            $plan = (float) $service->planned_volume;
+            $fact = $service->actual_volume !== null
+                ? (float) $service->actual_volume
+                : ($service->status->isDone() ? $plan : 0.0);
+
+            return min($fact, $plan);
+        });
+
+        return max(0.0, min(1.0, $done / $planned));
+    }
+
+    public function completedServicesCount(): int
+    {
+        return $this->services
+            ->filter(static function (Service $service): bool {
+                $plan = (float) $service->planned_volume;
+
+                return $service->status->isDone()
+                    || ($plan > 0 && (float) ($service->actual_volume ?? 0) >= $plan);
+            })
+            ->count();
+    }
+
     public static function newPublicToken(): string
     {
         return bin2hex(random_bytes(16));

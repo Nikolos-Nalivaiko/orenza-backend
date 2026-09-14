@@ -64,4 +64,12 @@ final class ObjectRepository extends BaseRepository implements ObjectRepositoryI
     {
         return $this->query()->withTrashed()->where('public_token', $token)->exists();
     }
+
+    public function findByPublicToken(string $token): ?ConstructionObject
+    {
+        return $this->query()
+            ->with(['materials', 'services', 'payments'])
+            ->where('public_token', $token)
+            ->first();
+    }
 }

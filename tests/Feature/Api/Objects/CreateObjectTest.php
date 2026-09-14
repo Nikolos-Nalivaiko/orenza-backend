@@ -6,6 +6,7 @@ namespace Tests\Feature\Api\Objects;
 
 use App\Models\Client;
 use App\Models\ConstructionObject;
+use App\Models\Employee;
 use App\Models\Membership;
 use App\Models\User;
 use App\Models\Workspace;
@@ -278,6 +279,7 @@ final class CreateObjectTest extends TestCase
     {
         $user = User::factory()->create();
         $workspace = $this->workspaceFor($user);
+        $employee = Employee::factory()->ofWorkspace($workspace)->create();
 
         $this->actingAs($user, 'sanctum')
             ->postJson("/api/v1/workspaces/{$workspace->slug}/objects", $this->payload([
@@ -288,14 +290,14 @@ final class CreateObjectTest extends TestCase
                         'planned_volume' => 120,
                         'client_price' => 1000,
                         'status' => 'planned',
-                        'workers' => [['employee_id' => 7, 'volume' => 120, 'rate' => 400]],
+                        'workers' => [['employee_id' => $employee->id, 'volume' => 120, 'rate' => 400]],
                     ],
                 ],
             ]))
             ->assertCreated()
             ->assertJsonCount(1, 'data.services')
             ->assertJsonPath('data.services.0.name', 'Монолітні роботи')
-            ->assertJsonPath('data.services.0.workers.0.employee_id', 7);
+            ->assertJsonPath('data.services.0.workers.0.employee_id', $employee->id);
 
         $this->assertDatabaseCount('services', 1);
         $this->assertDatabaseCount('service_workers', 1);
