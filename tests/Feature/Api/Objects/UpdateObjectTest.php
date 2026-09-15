@@ -26,6 +26,8 @@ final class UpdateObjectTest extends TestCase
     {
         parent::setUp();
 
+        $this->travelTo('2026-12-01 12:00:00');
+
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->ownedBy($this->user)->create();
 
@@ -99,6 +101,21 @@ final class UpdateObjectTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status.value', 'done')
             ->assertJsonPath('data.actual_finished_at', '2026-10-02');
+    }
+
+    public function test_an_actual_date_cannot_be_in_the_future(): void
+    {
+        $object = $this->object();
+
+        $this->travelTo('2026-09-14 22:30:00');
+
+        $this->edit($object, ['actual_started_at' => '2026-09-15'])
+            ->assertOk()
+            ->assertJsonPath('data.actual_started_at', '2026-09-15');
+
+        $this->edit($object, ['actual_finished_at' => '2026-09-16'])
+            ->assertStatus(422)
+            ->assertJsonPath('errors.actual_finished_at.0', 'Фактична дата не може бути пізніше за сьогодні.');
     }
 
     public function test_a_new_date_is_checked_against_the_stored_one(): void

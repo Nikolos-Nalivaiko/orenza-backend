@@ -106,6 +106,16 @@ abstract class ObjectRequest extends ApiFormRequest
         if ($finish !== null && $start === null) {
             $validator->errors()->add('actual_started_at', __('messages.objects.actual_start_first'));
         }
+
+        $latest = now()->addDay()->format('Y-m-d');
+
+        foreach (['actual_started_at', 'actual_finished_at'] as $field) {
+            $day = $this->filled($field) ? $this->day($field) : null;
+
+            if ($day !== null && $day > $latest) {
+                $validator->errors()->add($field, __('messages.objects.actual_in_future'));
+            }
+        }
     }
 
     private function checkStatus(Validator $validator): void

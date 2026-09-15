@@ -47,6 +47,7 @@ return [
         'actual_start_first' => 'Set the actual start date first.',
         'actual_start_required' => 'The object is in progress — set the actual start date.',
         'actual_finish_required' => 'The object is done — set the actual finish date.',
+        'actual_in_future' => 'An actual date cannot be later than today.',
         'discount_once' => 'A discount is either a percentage or an amount, not both.',
         'cover_updated' => 'Cover updated.',
         'cover_removed' => 'Cover removed.',
