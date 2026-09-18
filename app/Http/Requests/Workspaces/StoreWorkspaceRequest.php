@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Workspaces;
 
+use App\Actions\Workspaces\GenerateWorkspaceSlugAction;
 use App\DataTransferObjects\Workspaces\WorkspaceData;
 use App\Enums\WorkspaceType;
 use App\Http\Requests\ApiFormRequest;
@@ -32,6 +33,7 @@ final class StoreWorkspaceRequest extends ApiFormRequest
                 'min:2',
                 'max:48',
                 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+                Rule::notIn(GenerateWorkspaceSlugAction::RESERVED),
                 Rule::unique('workspaces', 'slug'),
             ],
         ];
@@ -45,6 +47,7 @@ final class StoreWorkspaceRequest extends ApiFormRequest
         return [
             'name.required' => __('messages.workspaces.name_required'),
             'slug.regex' => __('messages.workspaces.slug_format'),
+            'slug.not_in' => __('messages.workspaces.slug_reserved'),
         ];
     }
 

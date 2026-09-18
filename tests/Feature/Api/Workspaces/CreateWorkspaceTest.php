@@ -146,6 +146,22 @@ final class CreateWorkspaceTest extends TestCase
             ->assertJsonPath('data.slug', 'orenza-2');
     }
 
+    public function test_the_generated_slug_skips_reserved_words(): void
+    {
+        $this->actingAs(User::factory()->create(), 'sanctum')
+            ->postJson('/api/v1/workspaces', ['type' => 'company', 'name' => 'Login'])
+            ->assertCreated()
+            ->assertJsonPath('data.slug', 'login-2');
+    }
+
+    public function test_a_reserved_custom_slug_is_rejected(): void
+    {
+        $this->actingAs(User::factory()->create(), 'sanctum')
+            ->postJson('/api/v1/workspaces', ['type' => 'company', 'name' => 'Оренза', 'slug' => 'Workspaces'])
+            ->assertStatus(422)
+            ->assertJsonPath('errors.slug.0', __('messages.workspaces.slug_reserved'));
+    }
+
     public function test_a_name_without_latin_or_cyrillic_letters_still_gets_a_slug(): void
     {
         $this->actingAs(User::factory()->create(), 'sanctum')
