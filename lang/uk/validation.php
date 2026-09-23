@@ -164,6 +164,9 @@ return [
         'slug' => [
             'unique' => 'Ця адреса вже зайнята.',
         ],
+        'password' => [
+            'different' => 'Новий пароль має відрізнятися від поточного.',
+        ],
     ],
 
     'attributes' => [
@@ -172,6 +175,7 @@ return [
         'email' => 'Пошта',
         'phone' => 'Телефон',
         'password' => 'Пароль',
+        'current_password' => 'Поточний пароль',
         'password_confirmation' => 'Підтвердження пароля',
         'device_name' => 'Пристрій',
         'name' => 'Назва',

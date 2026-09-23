@@ -72,4 +72,34 @@ final class ObjectRepository extends BaseRepository implements ObjectRepositoryI
             ->where('public_token', $token)
             ->first();
     }
+
+    /**
+     * @param  list<int>  $workspaceIds
+     * @return Collection<int, ConstructionObject>
+     */
+    public function listWithMediaForWorkspaces(array $workspaceIds): Collection
+    {
+        return $this->query()
+            ->withTrashed()
+            ->with('photos')
+            ->whereIn('workspace_id', $workspaceIds)
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, ConstructionObject>
+     */
+    public function listForExport(Workspace $workspace): Collection
+    {
+        return $this->query()
+            ->with([
+                'client' => static fn ($query) => $query->withTrashed(),
+                'materials',
+                'services.workers.employee' => static fn ($query) => $query->withTrashed(),
+                'payments',
+            ])
+            ->ofWorkspace($workspace)
+            ->orderBy('id')
+            ->get();
+    }
 }

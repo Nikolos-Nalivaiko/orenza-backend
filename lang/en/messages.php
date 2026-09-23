@@ -13,6 +13,13 @@ return [
         'forbidden' => 'This action is unauthorized.',
     ],
 
+    'profile' => [
+        'updated' => 'Profile saved.',
+        'password_changed' => 'Password changed.',
+        'sessions_revoked' => 'Other sessions signed out.',
+        'deleted' => 'Account deleted.',
+    ],
+
     'http' => [
         'not_found' => 'The requested resource was not found.',
         'too_many_requests' => 'Too many requests.',
@@ -22,9 +29,13 @@ return [
 
     'workspaces' => [
         'created' => 'Workspace created.',
+        'updated' => 'Workspace updated.',
+        'deleted' => 'Workspace deleted.',
         'switched' => 'Current workspace changed.',
         'personal_exists' => 'You already have a personal workspace.',
         'name_required' => 'A company workspace requires a name.',
+        'name_empty' => 'The workspace name cannot be empty.',
+        'delete_name_mismatch' => 'The name does not match the workspace name.',
         'not_a_member' => 'You are not a member of this workspace.',
         'slug_format' => 'The slug may contain lowercase letters, digits and single dashes only.',
         'slug_reserved' => 'This slug is reserved for a system page — pick another one.',

@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Actions\Workspaces\CreateWorkspaceAction;
+use App\Actions\Workspaces\DeleteWorkspaceAction;
 use App\Actions\Workspaces\SwitchCurrentWorkspaceAction;
+use App\Actions\Workspaces\UpdateWorkspaceAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Workspaces\DeleteWorkspaceRequest;
 use App\Http\Requests\Workspaces\StoreWorkspaceRequest;
+use App\Http\Requests\Workspaces\UpdateWorkspaceRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\User;
@@ -23,6 +27,8 @@ final class WorkspaceController extends Controller
         private readonly WorkspaceRepositoryInterface $workspaces,
         private readonly CreateWorkspaceAction $createWorkspace,
         private readonly SwitchCurrentWorkspaceAction $switchCurrent,
+        private readonly UpdateWorkspaceAction $updateWorkspace,
+        private readonly DeleteWorkspaceAction $deleteWorkspace,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -53,6 +59,24 @@ final class WorkspaceController extends Controller
         $this->authorize('view', $workspace);
 
         return ApiResponse::success(new WorkspaceResource($workspace));
+    }
+
+    public function update(UpdateWorkspaceRequest $request, Workspace $workspace): JsonResponse
+    {
+        $this->authorize('update', $workspace);
+
+        $workspace = $this->updateWorkspace->handle($workspace, $request->name());
+
+        return ApiResponse::success(new WorkspaceResource($workspace), __('messages.workspaces.updated'));
+    }
+
+    public function destroy(DeleteWorkspaceRequest $request, Workspace $workspace): JsonResponse
+    {
+        $this->authorize('delete', $workspace);
+
+        $this->deleteWorkspace->handle($workspace);
+
+        return ApiResponse::success(null, __('messages.workspaces.deleted'));
     }
 
     public function switch(Request $request, Workspace $workspace): JsonResponse

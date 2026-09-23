@@ -23,4 +23,11 @@ interface WorkspaceRepositoryInterface extends RepositoryInterface
     public function slugExists(string $slug): bool;
 
     public function personalExistsFor(User $user): bool;
+
+    /**
+     * @return Collection<int, Workspace>
+     */
+    public function listOwnedBy(User $user): Collection;
+
+    public function forceDelete(Workspace $workspace): bool;
 }

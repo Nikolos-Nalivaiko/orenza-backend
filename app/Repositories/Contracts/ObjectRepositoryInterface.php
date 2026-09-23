@@ -29,4 +29,15 @@ interface ObjectRepositoryInterface extends RepositoryInterface
     public function tokenTaken(string $token): bool;
 
     public function findByPublicToken(string $token): ?ConstructionObject;
+
+    /**
+     * @param  list<int>  $workspaceIds
+     * @return Collection<int, ConstructionObject>
+     */
+    public function listWithMediaForWorkspaces(array $workspaceIds): Collection;
+
+    /**
+     * @return Collection<int, ConstructionObject>
+     */
+    public function listForExport(Workspace $workspace): Collection;
 }

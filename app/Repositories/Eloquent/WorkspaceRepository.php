@@ -56,4 +56,20 @@ final class WorkspaceRepository extends BaseRepository implements WorkspaceRepos
             ->where('type', WorkspaceType::Personal)
             ->exists();
     }
+
+    /**
+     * @return Collection<int, Workspace>
+     */
+    public function listOwnedBy(User $user): Collection
+    {
+        return $this->query()
+            ->withTrashed()
+            ->where('owner_id', $user->getKey())
+            ->get();
+    }
+
+    public function forceDelete(Workspace $workspace): bool
+    {
+        return (bool) $workspace->forceDelete();
+    }
 }

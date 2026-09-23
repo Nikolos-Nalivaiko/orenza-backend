@@ -11,9 +11,11 @@ use App\Http\Controllers\Api\ObjectController;
 use App\Http\Controllers\Api\ObjectCoverController;
 use App\Http\Controllers\Api\ObjectPhotoController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\TrackController;
 use App\Http\Controllers\Api\WorkspaceController;
+use App\Http\Controllers\Api\WorkspaceExportController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
@@ -36,11 +38,26 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     });
 
     Route::middleware('auth:sanctum')->group(function (): void {
+        Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('profile/password', [ProfileController::class, 'password'])
+            ->middleware('throttle:password')
+            ->name('profile.password');
+        Route::delete('profile', [ProfileController::class, 'destroy'])
+            ->middleware('throttle:password')
+            ->name('profile.destroy');
+        Route::delete('profile/sessions', [ProfileController::class, 'destroySessions'])->name('profile.sessions.destroy');
+
         Route::prefix('workspaces')->name('workspaces.')->group(function (): void {
             Route::get('/', [WorkspaceController::class, 'index'])->name('index');
             Route::post('/', [WorkspaceController::class, 'store'])->name('store');
             Route::get('{workspace}', [WorkspaceController::class, 'show'])->name('show');
+            Route::patch('{workspace}', [WorkspaceController::class, 'update'])->name('update');
+            Route::delete('{workspace}', [WorkspaceController::class, 'destroy'])->name('destroy');
             Route::put('{workspace}/current', [WorkspaceController::class, 'switch'])->name('switch');
+            Route::get('{workspace}/export/summary', [WorkspaceExportController::class, 'summary'])->name('export.summary');
+            Route::get('{workspace}/export', [WorkspaceExportController::class, 'download'])
+                ->middleware('throttle:export')
+                ->name('export');
 
             Route::prefix('{workspace}/clients')->name('clients.')->scopeBindings()->group(function (): void {
                 Route::get('/', [ClientController::class, 'index'])->name('index');

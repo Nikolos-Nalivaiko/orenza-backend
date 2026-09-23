@@ -15,6 +15,21 @@ final class WorkspacePolicy
         return $this->activeMembership($user, $workspace) instanceof Membership;
     }
 
+    public function manage(User $user, Workspace $workspace): bool
+    {
+        return $this->view($user, $workspace) && $workspace->isOwnedBy($user);
+    }
+
+    public function update(User $user, Workspace $workspace): bool
+    {
+        return $this->manage($user, $workspace);
+    }
+
+    public function delete(User $user, Workspace $workspace): bool
+    {
+        return $this->manage($user, $workspace);
+    }
+
     public function manageTeam(User $user, Workspace $workspace): bool
     {
         return $this->view($user, $workspace) && $workspace->type->hasTeam();
