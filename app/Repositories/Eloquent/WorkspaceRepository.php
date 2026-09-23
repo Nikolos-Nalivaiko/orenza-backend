@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories\Eloquent;
 
-use App\Enums\MembershipStatus;
 use App\Enums\WorkspaceType;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Repositories\Contracts\WorkspaceRepositoryInterface;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -36,10 +34,7 @@ final class WorkspaceRepository extends BaseRepository implements WorkspaceRepos
     public function listForUser(User $user): Collection
     {
         return $this->query()
-            ->whereHas('memberships', function (Builder $query) use ($user): void {
-                $query->where('user_id', $user->getKey())
-                    ->where('status', MembershipStatus::Active);
-            })
+            ->where('owner_id', $user->getKey())
             ->orderBy('created_at')
             ->get();
     }

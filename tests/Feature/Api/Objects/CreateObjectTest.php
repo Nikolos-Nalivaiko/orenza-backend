@@ -7,7 +7,6 @@ namespace Tests\Feature\Api\Objects;
 use App\Models\Client;
 use App\Models\ConstructionObject;
 use App\Models\Employee;
-use App\Models\Membership;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,11 +18,7 @@ final class CreateObjectTest extends TestCase
 
     private function workspaceFor(User $user): Workspace
     {
-        $workspace = Workspace::factory()->company()->ownedBy($user)->create();
-
-        Membership::factory()->forWorkspace($workspace)->forUser($user)->owner()->create();
-
-        return $workspace;
+        return Workspace::factory()->company()->ownedBy($user)->create();
     }
 
     /**

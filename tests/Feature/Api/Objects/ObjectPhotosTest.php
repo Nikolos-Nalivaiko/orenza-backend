@@ -6,7 +6,6 @@ namespace Tests\Feature\Api\Objects;
 
 use App\Actions\Objects\UploadObjectPhotoAction;
 use App\Models\ConstructionObject;
-use App\Models\Membership;
 use App\Models\ObjectPhoto;
 use App\Models\User;
 use App\Models\Workspace;
@@ -37,11 +36,6 @@ final class ObjectPhotosTest extends TestCase
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->ownedBy($this->user)->create();
 
-        Membership::factory()
-            ->forWorkspace($this->workspace)
-            ->forUser($this->user)
-            ->owner()
-            ->create();
     }
 
     private function url(ConstructionObject $object, ?ObjectPhoto $photo = null): string

@@ -7,7 +7,6 @@ namespace Tests\Feature\Api\Services;
 use App\Enums\ServiceStatus;
 use App\Models\ConstructionObject;
 use App\Models\Employee;
-use App\Models\Membership;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Workspace;
@@ -36,12 +35,6 @@ final class ServicesTest extends TestCase
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->company()->ownedBy($this->user)->create();
 
-        Membership::factory()
-            ->forWorkspace($this->workspace)
-            ->forUser($this->user)
-            ->owner()
-            ->create();
-
         $this->object = ConstructionObject::factory()->ofWorkspace($this->workspace)->create();
 
         $this->mason = Employee::factory()->ofWorkspace($this->workspace)->create();
@@ -59,8 +52,6 @@ final class ServicesTest extends TestCase
     private function personalObject(): ConstructionObject
     {
         $personal = Workspace::factory()->personal()->ownedBy($this->user)->create();
-
-        Membership::factory()->forWorkspace($personal)->forUser($this->user)->owner()->create();
 
         return ConstructionObject::factory()->ofWorkspace($personal)->create();
     }

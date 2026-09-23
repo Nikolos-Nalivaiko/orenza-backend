@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\Membership;
 use App\Models\User;
 use App\Models\Workspace;
 
@@ -12,33 +11,21 @@ final class WorkspacePolicy
 {
     public function view(User $user, Workspace $workspace): bool
     {
-        return $this->activeMembership($user, $workspace) instanceof Membership;
-    }
-
-    public function manage(User $user, Workspace $workspace): bool
-    {
-        return $this->view($user, $workspace) && $workspace->isOwnedBy($user);
+        return $workspace->isOwnedBy($user);
     }
 
     public function update(User $user, Workspace $workspace): bool
     {
-        return $this->manage($user, $workspace);
+        return $this->view($user, $workspace);
     }
 
     public function delete(User $user, Workspace $workspace): bool
     {
-        return $this->manage($user, $workspace);
+        return $this->view($user, $workspace);
     }
 
     public function manageTeam(User $user, Workspace $workspace): bool
     {
         return $this->view($user, $workspace) && $workspace->type->hasTeam();
-    }
-
-    private function activeMembership(User $user, Workspace $workspace): ?Membership
-    {
-        $membership = $workspace->membershipFor($user);
-
-        return $membership instanceof Membership && $membership->isActive() ? $membership : null;
     }
 }

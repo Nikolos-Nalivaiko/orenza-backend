@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\Clients;
 
 use App\Models\Client;
-use App\Models\Membership;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,11 +16,7 @@ final class CreateClientTest extends TestCase
 
     private function workspaceFor(User $user): Workspace
     {
-        $workspace = Workspace::factory()->ownedBy($user)->create();
-
-        Membership::factory()->forWorkspace($workspace)->forUser($user)->owner()->create();
-
-        return $workspace;
+        return Workspace::factory()->ownedBy($user)->create();
     }
 
     public function test_a_client_is_created_with_a_phone(): void

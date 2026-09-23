@@ -13,18 +13,14 @@ final readonly class SwitchCurrentWorkspaceAction implements Action
 {
     public function handle(User $user, Workspace $workspace): User
     {
-        $membership = $workspace->membershipFor($user);
-
-        if ($membership === null || ! $membership->isActive()) {
+        if (! $workspace->isOwnedBy($user)) {
             throw BusinessRuleException::make(
-                __('messages.workspaces.not_a_member'),
+                __('messages.workspaces.not_owned'),
                 ['workspace_id' => $workspace->getKey()],
             );
         }
 
         $user->forceFill(['current_workspace_id' => $workspace->getKey()])->save();
-
-        $membership->forceFill(['last_active_at' => now()])->save();
 
         return $user->refresh();
     }

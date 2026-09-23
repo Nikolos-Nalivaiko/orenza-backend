@@ -21,14 +21,14 @@ final class WorkspaceExportController extends Controller
 
     public function summary(Workspace $workspace): JsonResponse
     {
-        $this->authorize('manage', $workspace);
+        $this->authorize('view', $workspace);
 
         return ApiResponse::success($this->summarize->handle($workspace));
     }
 
     public function download(Workspace $workspace): BinaryFileResponse
     {
-        $this->authorize('manage', $workspace);
+        $this->authorize('view', $workspace);
 
         $path = $this->export->handle($workspace);
         $name = sprintf('orenza-%s-%s.zip', $workspace->slug, now()->toDateString());

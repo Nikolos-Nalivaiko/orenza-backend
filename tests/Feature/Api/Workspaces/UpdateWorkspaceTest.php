@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\Workspaces;
 
-use App\Models\Membership;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -46,22 +45,6 @@ final class UpdateWorkspaceTest extends TestCase
         $this->assertSame($type, $workspace->type);
     }
 
-    public function test_a_member_who_is_not_the_owner_cannot_rename(): void
-    {
-        $owner = User::factory()->create();
-        $member = User::factory()->create();
-        $workspace = $this->workspaceOf($owner);
-        $name = $workspace->name;
-
-        Membership::factory()->forWorkspace($workspace)->forUser($member)->create();
-
-        $this->actingAs($member, 'sanctum')
-            ->patchJson("/api/v1/workspaces/{$workspace->slug}", ['name' => 'Захоплено'])
-            ->assertForbidden();
-
-        $this->assertSame($name, $workspace->refresh()->name);
-    }
-
     public function test_an_outsider_cannot_rename(): void
     {
         $workspace = $this->workspaceOf(User::factory()->create());
@@ -93,10 +76,6 @@ final class UpdateWorkspaceTest extends TestCase
 
     private function workspaceOf(User $user): Workspace
     {
-        $workspace = Workspace::factory()->company()->ownedBy($user)->create();
-
-        Membership::factory()->forWorkspace($workspace)->forUser($user)->owner()->create();
-
-        return $workspace;
+        return Workspace::factory()->company()->ownedBy($user)->create();
     }
 }

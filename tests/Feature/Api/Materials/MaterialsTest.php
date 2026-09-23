@@ -7,7 +7,6 @@ namespace Tests\Feature\Api\Materials;
 use App\Enums\MaterialStatus;
 use App\Models\ConstructionObject;
 use App\Models\Material;
-use App\Models\Membership;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -30,12 +29,6 @@ final class MaterialsTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->ownedBy($this->user)->create();
-
-        Membership::factory()
-            ->forWorkspace($this->workspace)
-            ->forUser($this->user)
-            ->owner()
-            ->create();
 
         $this->object = ConstructionObject::factory()->ofWorkspace($this->workspace)->create();
     }

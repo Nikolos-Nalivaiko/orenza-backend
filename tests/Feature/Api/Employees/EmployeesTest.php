@@ -7,7 +7,6 @@ namespace Tests\Feature\Api\Employees;
 use App\Enums\EmployeeStatus;
 use App\Models\ConstructionObject;
 use App\Models\Employee;
-use App\Models\Membership;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Workspace;
@@ -30,11 +29,6 @@ final class EmployeesTest extends TestCase
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->company()->ownedBy($this->user)->create();
 
-        Membership::factory()
-            ->forWorkspace($this->workspace)
-            ->forUser($this->user)
-            ->owner()
-            ->create();
     }
 
     private function path(string $tail = '', ?Workspace $workspace = null): string
@@ -60,11 +54,7 @@ final class EmployeesTest extends TestCase
 
     private function personalWorkspace(): Workspace
     {
-        $personal = Workspace::factory()->personal()->ownedBy($this->user)->create();
-
-        Membership::factory()->forWorkspace($personal)->forUser($this->user)->owner()->create();
-
-        return $personal;
+        return Workspace::factory()->personal()->ownedBy($this->user)->create();
     }
 
     public function test_a_guest_sees_nothing(): void

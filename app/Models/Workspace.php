@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -37,14 +36,6 @@ class Workspace extends Model
     }
 
     /**
-     * @return HasMany<Membership, $this>
-     */
-    public function memberships(): HasMany
-    {
-        return $this->hasMany(Membership::class);
-    }
-
-    /**
      * @return HasMany<Client, $this>
      */
     public function clients(): HasMany
@@ -66,32 +57,6 @@ class Workspace extends Model
     public function objects(): HasMany
     {
         return $this->hasMany(ConstructionObject::class);
-    }
-
-    /**
-     * @return BelongsToMany<User, $this, Membership>
-     */
-    public function members(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'memberships')
-            ->using(Membership::class)
-            ->withPivot(['id', 'role', 'status', 'invited_by_id', 'last_active_at'])
-            ->withTimestamps()
-            ->as('membership');
-    }
-
-    public function membershipFor(User $user): ?Membership
-    {
-        return $this->memberships()
-            ->where('user_id', $user->getKey())
-            ->first();
-    }
-
-    public function hasMember(User $user): bool
-    {
-        return $this->memberships()
-            ->where('user_id', $user->getKey())
-            ->exists();
     }
 
     public function isOwnedBy(User $user): bool

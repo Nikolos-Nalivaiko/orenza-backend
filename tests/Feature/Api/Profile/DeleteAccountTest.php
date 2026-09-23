@@ -7,7 +7,6 @@ namespace Tests\Feature\Api\Profile;
 use App\Enums\CoverVariant;
 use App\Enums\PhotoVariant;
 use App\Models\ConstructionObject;
-use App\Models\Membership;
 use App\Models\ObjectPhoto;
 use App\Models\User;
 use App\Models\Workspace;
@@ -55,7 +54,6 @@ final class DeleteAccountTest extends TestCase
         $this->assertDatabaseMissing('workspaces', ['id' => $archived->id]);
         $this->assertDatabaseMissing('construction_objects', ['id' => $object->id]);
         $this->assertDatabaseMissing('construction_objects', ['id' => $trashed->id]);
-        $this->assertDatabaseCount('memberships', 0);
     }
 
     public function test_media_of_owned_workspaces_is_purged(): void
@@ -77,13 +75,11 @@ final class DeleteAccountTest extends TestCase
         $disk->assertMissing([$coverPath, $photoPath]);
     }
 
-    public function test_foreign_workspaces_stay_and_only_the_membership_is_dropped(): void
+    public function test_workspaces_of_other_users_stay(): void
     {
         $user = User::factory()->create();
         $owner = User::factory()->create();
         $foreign = $this->workspaceOf($owner);
-
-        Membership::factory()->forWorkspace($foreign)->forUser($user)->create();
 
         $this->actingAs($user, 'sanctum')
             ->deleteJson('/api/v1/profile', ['password' => 'password'])
@@ -91,7 +87,6 @@ final class DeleteAccountTest extends TestCase
 
         $this->assertModelExists($foreign);
         $this->assertModelExists($owner);
-        $this->assertSame(1, $foreign->memberships()->count());
     }
 
     public function test_a_wrong_password_is_rejected(): void
@@ -142,10 +137,6 @@ final class DeleteAccountTest extends TestCase
 
     private function workspaceOf(User $user): Workspace
     {
-        $workspace = Workspace::factory()->ownedBy($user)->create();
-
-        Membership::factory()->forWorkspace($workspace)->forUser($user)->owner()->create();
-
-        return $workspace;
+        return Workspace::factory()->ownedBy($user)->create();
     }
 }

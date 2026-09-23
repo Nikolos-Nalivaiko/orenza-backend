@@ -57,7 +57,6 @@ final class RegisterTest extends TestCase
         $this->postJson('/api/v1/auth/register', $this->payload())->assertCreated();
 
         $this->assertDatabaseCount('workspaces', 0);
-        $this->assertDatabaseCount('memberships', 0);
         $this->assertNull(User::firstWhere('email', 'ada@example.com')->current_workspace_id);
     }
 

@@ -8,7 +8,6 @@ use App\Models\Client;
 use App\Models\ConstructionObject;
 use App\Models\Employee;
 use App\Models\Material;
-use App\Models\Membership;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\ServiceWorker;
@@ -34,7 +33,6 @@ final class ExportWorkspaceTest extends TestCase
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->company()->ownedBy($this->user)->create(['slug' => 'budmaister']);
 
-        Membership::factory()->forWorkspace($this->workspace)->forUser($this->user)->owner()->create();
     }
 
     public function test_the_summary_counts_the_workspace_data(): void
@@ -67,7 +65,6 @@ final class ExportWorkspaceTest extends TestCase
     public function test_a_personal_workspace_has_no_team_in_the_summary(): void
     {
         $personal = Workspace::factory()->personal()->ownedBy($this->user)->create(['slug' => 'personal-one']);
-        Membership::factory()->forWorkspace($personal)->forUser($this->user)->owner()->create();
 
         $this->actingAs($this->user, 'sanctum')
             ->getJson('/api/v1/workspaces/personal-one/export/summary')
@@ -130,7 +127,6 @@ final class ExportWorkspaceTest extends TestCase
     public function test_a_personal_workspace_archive_has_no_team_file(): void
     {
         $personal = Workspace::factory()->personal()->ownedBy($this->user)->create(['slug' => 'personal-one']);
-        Membership::factory()->forWorkspace($personal)->forUser($this->user)->owner()->create();
 
         $response = $this->actingAs($this->user, 'sanctum')->get('/api/v1/workspaces/personal-one/export')->assertOk();
 
@@ -153,20 +149,6 @@ final class ExportWorkspaceTest extends TestCase
             ->assertForbidden();
 
         $this->actingAs(User::factory()->create(), 'sanctum')
-            ->getJson('/api/v1/workspaces/budmaister/export/summary')
-            ->assertForbidden();
-    }
-
-    public function test_a_member_who_is_not_the_owner_cannot_export(): void
-    {
-        $member = User::factory()->create();
-        Membership::factory()->forWorkspace($this->workspace)->forUser($member)->create();
-
-        $this->actingAs($member, 'sanctum')
-            ->getJson('/api/v1/workspaces/budmaister/export')
-            ->assertForbidden();
-
-        $this->actingAs($member, 'sanctum')
             ->getJson('/api/v1/workspaces/budmaister/export/summary')
             ->assertForbidden();
     }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\Workspaces;
 
-use App\Enums\MembershipRole;
-use App\Enums\MembershipStatus;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,7 +19,7 @@ final class CreateWorkspaceTest extends TestCase
             ->assertUnauthorized();
     }
 
-    public function test_a_company_workspace_is_created_with_an_owner_membership(): void
+    public function test_a_company_workspace_is_created_for_its_owner(): void
     {
         $user = User::factory()->create();
 
@@ -38,12 +36,6 @@ final class CreateWorkspaceTest extends TestCase
         $workspace = Workspace::sole();
 
         $this->assertTrue($workspace->owner->is($user));
-
-        $membership = $workspace->membershipFor($user);
-
-        $this->assertNotNull($membership);
-        $this->assertSame(MembershipRole::Owner, $membership->role);
-        $this->assertSame(MembershipStatus::Active, $membership->status);
     }
 
     public function test_a_company_workspace_requires_a_name(): void
@@ -107,7 +99,7 @@ final class CreateWorkspaceTest extends TestCase
             ->assertJsonPath('data.slug', 'orenza-2');
 
         $this->assertDatabaseCount('workspaces', 2);
-        $this->assertSame(2, $user->memberships()->role(MembershipRole::Owner)->count());
+        $this->assertSame(2, $user->ownedWorkspaces()->count());
     }
 
     public function test_a_custom_slug_is_accepted(): void

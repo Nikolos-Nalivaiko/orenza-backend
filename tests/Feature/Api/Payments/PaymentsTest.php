@@ -6,7 +6,6 @@ namespace Tests\Feature\Api\Payments;
 
 use App\Enums\PaymentStatus;
 use App\Models\ConstructionObject;
-use App\Models\Membership;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\Workspace;
@@ -30,12 +29,6 @@ final class PaymentsTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->company()->ownedBy($this->user)->create();
-
-        Membership::factory()
-            ->forWorkspace($this->workspace)
-            ->forUser($this->user)
-            ->owner()
-            ->create();
 
         $this->object = ConstructionObject::factory()->ofWorkspace($this->workspace)->create();
     }

@@ -6,8 +6,6 @@ namespace App\Actions\Workspaces;
 
 use App\Actions\Contracts\Action;
 use App\DataTransferObjects\Workspaces\WorkspaceData;
-use App\Enums\MembershipRole;
-use App\Enums\MembershipStatus;
 use App\Exceptions\BusinessRuleException;
 use App\Models\User;
 use App\Models\Workspace;
@@ -44,12 +42,6 @@ final readonly class CreateWorkspaceAction implements Action
                 'name' => $name,
                 'slug' => $slug,
                 'owner_id' => $owner->getKey(),
-            ]);
-
-            $workspace->memberships()->create([
-                'user_id' => $owner->getKey(),
-                'role' => MembershipRole::Owner,
-                'status' => MembershipStatus::Active,
             ]);
 
             if ($owner->current_workspace_id === null) {

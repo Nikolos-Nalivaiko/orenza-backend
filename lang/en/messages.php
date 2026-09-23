@@ -36,7 +36,7 @@ return [
         'name_required' => 'A company workspace requires a name.',
         'name_empty' => 'The workspace name cannot be empty.',
         'delete_name_mismatch' => 'The name does not match the workspace name.',
-        'not_a_member' => 'You are not a member of this workspace.',
+        'not_owned' => 'This workspace does not belong to you.',
         'slug_format' => 'The slug may contain lowercase letters, digits and single dashes only.',
         'slug_reserved' => 'This slug is reserved for a system page — pick another one.',
     ],
@@ -105,11 +105,6 @@ return [
             'personal' => 'Personal',
             'company' => 'Company',
         ],
-        'membership_role' => [
-            'owner' => 'Owner',
-            'admin' => 'Administrator',
-            'member' => 'Member',
-        ],
         'client_type' => [
             'person' => 'Person',
             'company' => 'Company',
@@ -146,10 +141,6 @@ return [
             'partial' => 'Partially paid',
             'paid' => 'Paid in full',
             'over' => 'Overpaid',
-        ],
-        'membership_status' => [
-            'active' => 'Active',
-            'suspended' => 'Suspended',
         ],
     ],
 

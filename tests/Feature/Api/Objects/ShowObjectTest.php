@@ -8,7 +8,6 @@ use App\Models\Client;
 use App\Models\ConstructionObject;
 use App\Models\Employee;
 use App\Models\Material;
-use App\Models\Membership;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\User;
@@ -32,11 +31,6 @@ final class ShowObjectTest extends TestCase
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->ownedBy($this->user)->create();
 
-        Membership::factory()
-            ->forWorkspace($this->workspace)
-            ->forUser($this->user)
-            ->owner()
-            ->create();
     }
 
     private function show(ConstructionObject $object): TestResponse

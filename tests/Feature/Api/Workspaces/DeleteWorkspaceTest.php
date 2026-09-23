@@ -8,7 +8,6 @@ use App\Enums\CoverVariant;
 use App\Enums\PhotoVariant;
 use App\Models\Client;
 use App\Models\ConstructionObject;
-use App\Models\Membership;
 use App\Models\ObjectPhoto;
 use App\Models\User;
 use App\Models\Workspace;
@@ -40,7 +39,6 @@ final class DeleteWorkspaceTest extends TestCase
         $this->assertDatabaseMissing('clients', ['id' => $client->id]);
         $this->assertDatabaseMissing('construction_objects', ['id' => $object->id]);
         $this->assertDatabaseMissing('construction_objects', ['id' => $trashed->id]);
-        $this->assertDatabaseMissing('memberships', ['workspace_id' => $workspace->id]);
         $this->assertModelExists($owner);
     }
 
@@ -59,23 +57,18 @@ final class DeleteWorkspaceTest extends TestCase
         $this->assertModelExists($otherObject);
     }
 
-    public function test_the_current_workspace_is_reset_for_everyone(): void
+    public function test_the_current_workspace_is_reset(): void
     {
         $owner = User::factory()->create();
-        $member = User::factory()->create();
         $workspace = $this->workspaceOf($owner, 'БудМайстер');
 
-        Membership::factory()->forWorkspace($workspace)->forUser($member)->create();
         $owner->forceFill(['current_workspace_id' => $workspace->id])->save();
-        $member->forceFill(['current_workspace_id' => $workspace->id])->save();
 
         $this->actingAs($owner, 'sanctum')
             ->deleteJson("/api/v1/workspaces/{$workspace->slug}", ['name' => 'БудМайстер'])
             ->assertOk();
 
         $this->assertNull($owner->refresh()->current_workspace_id);
-        $this->assertNull($member->refresh()->current_workspace_id);
-        $this->assertModelExists($member);
     }
 
     public function test_media_files_are_purged(): void
@@ -126,21 +119,6 @@ final class DeleteWorkspaceTest extends TestCase
         $this->assertModelExists($workspace);
     }
 
-    public function test_a_member_who_is_not_the_owner_cannot_delete(): void
-    {
-        $owner = User::factory()->create();
-        $member = User::factory()->create();
-        $workspace = $this->workspaceOf($owner, 'БудМайстер');
-
-        Membership::factory()->forWorkspace($workspace)->forUser($member)->create();
-
-        $this->actingAs($member, 'sanctum')
-            ->deleteJson("/api/v1/workspaces/{$workspace->slug}", ['name' => 'БудМайстер'])
-            ->assertForbidden();
-
-        $this->assertModelExists($workspace);
-    }
-
     public function test_an_outsider_cannot_delete(): void
     {
         $workspace = $this->workspaceOf(User::factory()->create(), 'БудМайстер');
@@ -161,10 +139,6 @@ final class DeleteWorkspaceTest extends TestCase
 
     private function workspaceOf(User $user, string $name): Workspace
     {
-        $workspace = Workspace::factory()->company()->ownedBy($user)->create(['name' => $name]);
-
-        Membership::factory()->forWorkspace($workspace)->forUser($user)->owner()->create();
-
-        return $workspace;
+        return Workspace::factory()->company()->ownedBy($user)->create(['name' => $name]);
     }
 }
