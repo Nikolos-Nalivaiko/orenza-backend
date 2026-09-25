@@ -9,6 +9,7 @@ use App\Actions\Services\DeleteServiceAction;
 use App\Actions\Services\SetServicesStatusAction;
 use App\Actions\Services\UpdateServiceAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PageRequest;
 use App\Http\Requests\Services\StatusServicesRequest;
 use App\Http\Requests\Services\StoreServiceRequest;
 use App\Http\Requests\Services\UpdateServiceRequest;
@@ -30,15 +31,13 @@ final class ServiceController extends Controller
         private readonly SetServicesStatusAction $setStatus,
     ) {}
 
-    public function index(Workspace $workspace, ConstructionObject $object): JsonResponse
+    public function index(PageRequest $request, Workspace $workspace, ConstructionObject $object): JsonResponse
     {
         $this->authorize('view', $workspace);
 
-        $services = $this->services->listForObject($object);
-
-        return ApiResponse::success(
-            ServiceResource::collection($services)->resolve(),
-            meta: ['total' => $services->count()],
+        return ApiResponse::paginated(
+            $this->services->paginateForObject($object, $request->perPage()),
+            ServiceResource::class,
         );
     }
 

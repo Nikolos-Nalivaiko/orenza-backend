@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Support\MomentCursor;
 use Carbon\CarbonImmutable;
 use Database\Factories\ObjectPhotoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -79,5 +80,29 @@ class ObjectPhoto extends Model
         return $query
             ->orderByRaw('coalesce(taken_at, created_at) desc')
             ->orderByDesc('id');
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopeAfterPosition(Builder $query, MomentCursor $cursor): Builder
+    {
+        $moment = $cursor->moment->utc()->format('Y-m-d H:i:s');
+
+        return $query->where(static function (Builder $inner) use ($moment, $cursor): void {
+            $inner
+                ->whereRaw('coalesce(taken_at, created_at) < ?', [$moment])
+                ->orWhere(static function (Builder $same) use ($moment, $cursor): void {
+                    $same
+                        ->whereRaw('coalesce(taken_at, created_at) = ?', [$moment])
+                        ->where('id', '<', $cursor->id);
+                });
+        });
+    }
+
+    public function position(): MomentCursor
+    {
+        return new MomentCursor($this->moment() ?? CarbonImmutable::now(), (int) $this->id);
     }
 }

@@ -8,6 +8,7 @@ use App\Enums\ServiceStatus;
 use App\Models\ConstructionObject;
 use App\Models\Service;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -24,11 +25,11 @@ final class ServiceRepository extends BaseRepository implements ServiceRepositor
     }
 
     /**
-     * @return Collection<int, Service>
+     * @return LengthAwarePaginator<int, Service>
      */
-    public function listForObject(ConstructionObject $object): Collection
+    public function paginateForObject(ConstructionObject $object, int $perPage): LengthAwarePaginator
     {
-        return $this->query()->with('workers')->ofObject($object)->orderBy('id')->get();
+        return $this->query()->with('workers')->ofObject($object)->orderBy('id')->paginate($perPage);
     }
 
     /**

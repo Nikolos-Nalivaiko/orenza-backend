@@ -6,7 +6,7 @@ namespace App\Repositories\Contracts;
 
 use App\Models\ConstructionObject;
 use App\Models\Payment;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * @extends RepositoryInterface<Payment>
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Collection;
 interface PaymentRepositoryInterface extends RepositoryInterface
 {
     /**
-     * @return Collection<int, Payment>
+     * @return LengthAwarePaginator<int, Payment>
      */
-    public function listForObject(ConstructionObject $object): Collection;
+    public function paginateForObject(ConstructionObject $object, int $perPage): LengthAwarePaginator;
 }

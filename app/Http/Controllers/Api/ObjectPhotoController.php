@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Objects\DeleteObjectPhotoAction;
 use App\Actions\Objects\UploadObjectPhotoAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Objects\ListPhotosRequest;
 use App\Http\Requests\Objects\StorePhotoRequest;
 use App\Http\Resources\ObjectPhotoResource;
 use App\Models\ConstructionObject;
@@ -25,16 +26,23 @@ final class ObjectPhotoController extends Controller
         private readonly DeleteObjectPhotoAction $deletePhoto,
     ) {}
 
-    public function index(Workspace $workspace, ConstructionObject $object): JsonResponse
+    public function index(ListPhotosRequest $request, Workspace $workspace, ConstructionObject $object): JsonResponse
     {
         $this->authorize('view', $workspace);
 
-        $photos = $this->photos->listForObject($object);
+        $perPage = $request->perPage();
+        $found = $this->photos->pageForObject($object, $perPage + 1, $request->cursor());
+        $photos = $found->take($perPage);
+        $last = $photos->last();
 
         return ApiResponse::success(
             ObjectPhotoResource::collection($photos)->resolve(),
             meta: [
-                'total' => $photos->count(),
+                'per_page' => $perPage,
+                'next_cursor' => $found->count() > $perPage && $last instanceof ObjectPhoto
+                    ? $last->position()->encode()
+                    : null,
+                'total' => $this->photos->countForObject($object),
                 'limit' => UploadObjectPhotoAction::MAX_PER_OBJECT,
             ],
         );

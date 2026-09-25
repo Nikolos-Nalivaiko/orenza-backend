@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\Objects;
 
 use App\Actions\Objects\UploadObjectPhotoAction;
+use App\Http\Requests\PageRequest;
 use App\Models\ConstructionObject;
 use App\Models\ObjectPhoto;
 use App\Models\User;
@@ -183,7 +184,87 @@ final class ObjectPhotosTest extends TestCase
             ->assertJsonPath('data.1.id', $middle->id)
             ->assertJsonPath('data.2.id', $old->id)
             ->assertJsonPath('meta.total', 3)
-            ->assertJsonPath('meta.limit', UploadObjectPhotoAction::MAX_PER_OBJECT);
+            ->assertJsonPath('meta.limit', UploadObjectPhotoAction::MAX_PER_OBJECT)
+            ->assertJsonPath('meta.next_cursor', null);
+    }
+
+    public function test_photos_come_in_pages_that_follow_one_another(): void
+    {
+        $object = $this->object();
+
+        $expected = [];
+
+        foreach (['2026-09-03', '2026-09-02', '2026-09-02', '2026-09-02', '2026-09-01'] as $day) {
+            $expected[] = ObjectPhoto::factory()->ofObject($object)->takenAt("{$day} 09:00:00")->create();
+        }
+
+        usort($expected, static fn (ObjectPhoto $left, ObjectPhoto $right): int => [$right->taken_at, $right->id] <=> [$left->taken_at, $left->id]);
+
+        $seen = [];
+        $cursor = null;
+        $pages = 0;
+
+        do {
+            $query = http_build_query(array_filter(['per_page' => 2, 'cursor' => $cursor]));
+
+            $response = $this->actingAs($this->user, 'sanctum')
+                ->getJson("{$this->url($object)}?{$query}")
+                ->assertOk()
+                ->assertJsonPath('meta.total', 5)
+                ->assertJsonPath('meta.per_page', 2);
+
+            $seen = [...$seen, ...array_column((array) $response->json('data'), 'id')];
+            $cursor = $response->json('meta.next_cursor');
+            $pages++;
+        } while ($cursor !== null && $pages < 10);
+
+        $this->assertSame(3, $pages);
+        $this->assertSame(array_map(static fn (ObjectPhoto $photo): int => $photo->id, $expected), $seen);
+    }
+
+    public function test_a_photo_added_between_pages_does_not_shift_the_next_page(): void
+    {
+        $object = $this->object();
+
+        $first = ObjectPhoto::factory()->ofObject($object)->takenAt('2026-09-03 09:00:00')->create();
+        $second = ObjectPhoto::factory()->ofObject($object)->takenAt('2026-09-02 09:00:00')->create();
+        $third = ObjectPhoto::factory()->ofObject($object)->takenAt('2026-09-01 09:00:00')->create();
+
+        $cursor = $this->actingAs($this->user, 'sanctum')
+            ->getJson("{$this->url($object)}?per_page=2")
+            ->assertJsonPath('data.0.id', $first->id)
+            ->assertJsonPath('data.1.id', $second->id)
+            ->json('meta.next_cursor');
+
+        ObjectPhoto::factory()->ofObject($object)->takenAt('2026-09-05 09:00:00')->create();
+
+        $this->getJson("{$this->url($object)}?per_page=2&cursor={$cursor}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $third->id)
+            ->assertJsonPath('meta.next_cursor', null)
+            ->assertJsonPath('meta.total', 4);
+    }
+
+    public function test_a_broken_cursor_is_rejected(): void
+    {
+        $object = $this->object();
+
+        $this->actingAs($this->user, 'sanctum')
+            ->getJson("{$this->url($object)}?cursor=not-a-cursor")
+            ->assertStatus(422)
+            ->assertJsonPath('error_code', 'validation_failed')
+            ->assertJsonStructure(['errors' => ['cursor']]);
+    }
+
+    public function test_a_page_cannot_be_larger_than_the_limit(): void
+    {
+        $object = $this->object();
+
+        $this->actingAs($this->user, 'sanctum')
+            ->getJson("{$this->url($object)}?per_page=".(PageRequest::maxPerPage() + 1))
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['per_page']]);
     }
 
     public function test_a_photo_can_be_removed(): void

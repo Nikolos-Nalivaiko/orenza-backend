@@ -7,7 +7,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\ConstructionObject;
 use App\Models\Payment;
 use App\Repositories\Contracts\PaymentRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * @extends BaseRepository<Payment>
@@ -23,10 +23,10 @@ final class PaymentRepository extends BaseRepository implements PaymentRepositor
     }
 
     /**
-     * @return Collection<int, Payment>
+     * @return LengthAwarePaginator<int, Payment>
      */
-    public function listForObject(ConstructionObject $object): Collection
+    public function paginateForObject(ConstructionObject $object, int $perPage): LengthAwarePaginator
     {
-        return $this->query()->ofObject($object)->orderBy('id')->get();
+        return $this->query()->ofObject($object)->orderBy('id')->paginate($perPage);
     }
 }

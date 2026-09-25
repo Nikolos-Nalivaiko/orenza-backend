@@ -76,6 +76,21 @@ final class ServicesTest extends TestCase
         $this->getJson($this->path())->assertUnauthorized();
     }
 
+    public function test_the_works_are_split_into_pages(): void
+    {
+        foreach (['Перший', 'Другий', 'Третій'] as $name) {
+            $this->add(['name' => $name])->assertCreated();
+        }
+
+        $this->actingAs($this->user, 'sanctum')
+            ->getJson($this->path('?per_page=2&page=2'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Третій')
+            ->assertJsonPath('meta.last_page', 2)
+            ->assertJsonPath('meta.total', 3);
+    }
+
     public function test_a_work_is_added(): void
     {
         $this->add()

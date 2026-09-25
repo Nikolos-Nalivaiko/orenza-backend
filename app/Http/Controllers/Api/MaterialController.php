@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Materials\StatusMaterialsRequest;
 use App\Http\Requests\Materials\StoreMaterialRequest;
 use App\Http\Requests\Materials\UpdateMaterialRequest;
+use App\Http\Requests\PageRequest;
 use App\Http\Resources\MaterialResource;
 use App\Models\ConstructionObject;
 use App\Models\Material;
@@ -30,15 +31,13 @@ final class MaterialController extends Controller
         private readonly SetMaterialsStatusAction $setStatus,
     ) {}
 
-    public function index(Workspace $workspace, ConstructionObject $object): JsonResponse
+    public function index(PageRequest $request, Workspace $workspace, ConstructionObject $object): JsonResponse
     {
         $this->authorize('view', $workspace);
 
-        $materials = $this->materials->listForObject($object);
-
-        return ApiResponse::success(
-            MaterialResource::collection($materials)->resolve(),
-            meta: ['total' => $materials->count()],
+        return ApiResponse::paginated(
+            $this->materials->paginateForObject($object, $request->perPage()),
+            MaterialResource::class,
         );
     }
 

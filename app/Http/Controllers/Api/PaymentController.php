@@ -8,6 +8,7 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\Actions\Payments\DeletePaymentAction;
 use App\Actions\Payments\UpdatePaymentAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PageRequest;
 use App\Http\Requests\Payments\StorePaymentRequest;
 use App\Http\Requests\Payments\UpdatePaymentRequest;
 use App\Http\Resources\PaymentResource;
@@ -27,15 +28,13 @@ final class PaymentController extends Controller
         private readonly DeletePaymentAction $deletePayment,
     ) {}
 
-    public function index(Workspace $workspace, ConstructionObject $object): JsonResponse
+    public function index(PageRequest $request, Workspace $workspace, ConstructionObject $object): JsonResponse
     {
         $this->authorize('view', $workspace);
 
-        $payments = $this->payments->listForObject($object);
-
-        return ApiResponse::success(
-            PaymentResource::collection($payments)->resolve(),
-            meta: ['total' => $payments->count()],
+        return ApiResponse::paginated(
+            $this->payments->paginateForObject($object, $request->perPage()),
+            PaymentResource::class,
         );
     }
 

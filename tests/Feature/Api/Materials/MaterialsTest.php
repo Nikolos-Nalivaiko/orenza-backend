@@ -131,6 +131,35 @@ final class MaterialsTest extends TestCase
             ->assertJsonPath('data.1.name', 'Другий');
     }
 
+    public function test_positions_are_split_into_pages(): void
+    {
+        foreach (['Перший', 'Другий', 'Третій'] as $name) {
+            $this->add(['name' => $name])->assertCreated();
+        }
+
+        $this->actingAs($this->user, 'sanctum')
+            ->getJson($this->path('?per_page=2&page=2'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Третій')
+            ->assertJsonPath('meta.current_page', 2)
+            ->assertJsonPath('meta.last_page', 2)
+            ->assertJsonPath('meta.per_page', 2)
+            ->assertJsonPath('meta.total', 3);
+    }
+
+    public function test_a_page_of_positions_is_capped(): void
+    {
+        $this->actingAs($this->user, 'sanctum')
+            ->getJson($this->path('?per_page=100000'))
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['per_page']]);
+
+        $this->getJson($this->path('?page=0'))
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['page']]);
+    }
+
     public function test_the_status_of_several_positions_changes_at_once(): void
     {
         $first = Material::factory()->ofObject($this->object)->create();

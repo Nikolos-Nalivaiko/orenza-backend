@@ -7,6 +7,7 @@ namespace App\Repositories\Contracts;
 use App\Enums\ServiceStatus;
 use App\Models\ConstructionObject;
 use App\Models\Service;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -15,9 +16,9 @@ use Illuminate\Database\Eloquent\Collection;
 interface ServiceRepositoryInterface extends RepositoryInterface
 {
     /**
-     * @return Collection<int, Service>
+     * @return LengthAwarePaginator<int, Service>
      */
-    public function listForObject(ConstructionObject $object): Collection;
+    public function paginateForObject(ConstructionObject $object, int $perPage): LengthAwarePaginator;
 
     /**
      * @param  array<int, int>  $ids

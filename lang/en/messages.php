@@ -24,6 +24,7 @@ return [
         'not_found' => 'The requested resource was not found.',
         'too_many_requests' => 'Too many requests.',
         'validation_failed' => 'The given data was invalid.',
+        'invalid_cursor' => 'The next page link is outdated. Refresh the list.',
         'server_error' => 'The request could not be processed.',
     ],
 

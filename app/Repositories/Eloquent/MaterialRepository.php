@@ -8,6 +8,7 @@ use App\Enums\MaterialStatus;
 use App\Models\ConstructionObject;
 use App\Models\Material;
 use App\Repositories\Contracts\MaterialRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -24,11 +25,11 @@ final class MaterialRepository extends BaseRepository implements MaterialReposit
     }
 
     /**
-     * @return Collection<int, Material>
+     * @return LengthAwarePaginator<int, Material>
      */
-    public function listForObject(ConstructionObject $object): Collection
+    public function paginateForObject(ConstructionObject $object, int $perPage): LengthAwarePaginator
     {
-        return $this->query()->ofObject($object)->orderBy('id')->get();
+        return $this->query()->ofObject($object)->orderBy('id')->paginate($perPage);
     }
 
     /**
