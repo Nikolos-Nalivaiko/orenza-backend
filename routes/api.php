@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\ObjectController;
-use App\Http\Controllers\Api\ObjectCoverController;
 use App\Http\Controllers\Api\ObjectPhotoController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProfileController;
@@ -81,12 +80,6 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
                 Route::get('{object}', [ObjectController::class, 'show'])->name('show');
                 Route::patch('{object}', [ObjectController::class, 'update'])->name('update');
                 Route::delete('{object}', [ObjectController::class, 'destroy'])->name('destroy');
-
-                Route::prefix('{object}/cover')->name('cover.')->group(function (): void {
-                    Route::post('/', [ObjectCoverController::class, 'store'])->name('store');
-                    Route::patch('/', [ObjectCoverController::class, 'update'])->name('update');
-                    Route::delete('/', [ObjectCoverController::class, 'destroy'])->name('destroy');
-                });
 
                 Route::prefix('{object}/materials')->name('materials.')->group(function (): void {
                     Route::get('/', [MaterialController::class, 'index'])->name('index');

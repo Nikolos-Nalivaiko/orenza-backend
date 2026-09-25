@@ -39,7 +39,6 @@ final class TrackObjectResource extends JsonResource
                 'value' => $this->status->value,
                 'label' => $this->status->label(),
             ],
-            'cover' => CoverResource::for($this->resource),
             'readiness' => $readiness === null ? null : round($readiness, 4),
             'works' => [
                 'done' => $this->completedServicesCount(),

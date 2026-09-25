@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\Workspaces;
 
-use App\Enums\CoverVariant;
 use App\Enums\PhotoVariant;
 use App\Models\Client;
 use App\Models\ConstructionObject;
 use App\Models\ObjectPhoto;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Support\Media\CoverStorage;
 use App\Support\Media\PhotoStorage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -76,19 +74,17 @@ final class DeleteWorkspaceTest extends TestCase
         $disk = Storage::fake('media');
         $owner = User::factory()->create();
         $workspace = $this->workspaceOf($owner, 'БудМайстер');
-        $object = ConstructionObject::factory()->ofWorkspace($workspace)->withCover()->create();
+        $object = ConstructionObject::factory()->ofWorkspace($workspace)->create();
         $photo = ObjectPhoto::factory()->ofObject($object)->create();
 
-        $coverPath = app(CoverStorage::class)->path($object->id, $object->cover, CoverVariant::cases()[0]);
         $photoPath = app(PhotoStorage::class)->path($object->id, $photo->key, PhotoVariant::cases()[0]);
-        $disk->put($coverPath, 'cover');
         $disk->put($photoPath, 'photo');
 
         $this->actingAs($owner, 'sanctum')
             ->deleteJson("/api/v1/workspaces/{$workspace->slug}", ['name' => 'БудМайстер'])
             ->assertOk();
 
-        $disk->assertMissing([$coverPath, $photoPath]);
+        $disk->assertMissing($photoPath);
     }
 
     public function test_the_tracking_link_stops_working(): void

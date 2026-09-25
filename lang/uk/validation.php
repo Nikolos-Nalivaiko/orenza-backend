@@ -191,7 +191,6 @@ return [
         'actual_started_at' => 'Фактичний початок',
         'actual_finished_at' => 'Фактичне завершення',
         'archived' => 'Архів',
-        'cover' => 'Обкладинка',
         'photo' => 'Фото',
         'taken_at' => 'Дата зйомки',
         'focus_x' => 'Фокус по горизонталі',

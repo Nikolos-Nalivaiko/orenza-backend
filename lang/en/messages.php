@@ -61,10 +61,6 @@ return [
         'actual_finish_required' => 'The object is done — set the actual finish date.',
         'actual_in_future' => 'An actual date cannot be later than today.',
         'discount_once' => 'A discount is either a percentage or an amount, not both.',
-        'cover_updated' => 'Cover updated.',
-        'cover_removed' => 'Cover removed.',
-        'cover_missing' => 'The object has no cover yet.',
-        'cover_unreadable' => 'The image could not be read. Try another file.',
     ],
 
     'materials' => [

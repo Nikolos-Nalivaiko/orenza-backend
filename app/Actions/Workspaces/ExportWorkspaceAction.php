@@ -248,7 +248,7 @@ final readonly class ExportWorkspaceAction implements Action
             'clients' => $clients->map(static fn (Client $client): array => self::attributes($client))->values()->all(),
             'employees' => $employees?->map(static fn (Employee $employee): array => self::attributes($employee))->values()->all(),
             'objects' => $objects->map(static fn (ConstructionObject $object): array => [
-                ...self::attributes($object, ['cover', 'public_token']),
+                ...self::attributes($object, ['public_token']),
                 'materials' => $object->materials->map(static fn (Material $material): array => self::attributes($material, ['construction_object_id']))->values()->all(),
                 'services' => $object->services->map(static fn (Service $service): array => [
                     ...self::attributes($service, ['construction_object_id']),

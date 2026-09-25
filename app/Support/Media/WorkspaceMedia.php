@@ -11,7 +11,6 @@ final readonly class WorkspaceMedia
 {
     public function __construct(
         private ObjectRepositoryInterface $objects,
-        private CoverStorage $covers,
         private PhotoStorage $photos,
     ) {}
 
@@ -34,10 +33,6 @@ final readonly class WorkspaceMedia
         $paths = [];
 
         foreach ($this->objects->listWithMediaForWorkspaces($ids) as $object) {
-            if ($object->cover !== null) {
-                array_push($paths, ...$this->covers->paths($object->id, $object->cover));
-            }
-
             foreach ($object->photos as $photo) {
                 array_push($paths, ...$this->photos->paths($object->id, $photo->key));
             }

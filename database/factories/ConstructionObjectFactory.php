@@ -8,7 +8,6 @@ use App\Enums\ObjectStatus;
 use App\Models\Client;
 use App\Models\ConstructionObject;
 use App\Models\Workspace;
-use App\Support\Media\Cover;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -34,7 +33,6 @@ class ConstructionObjectFactory extends Factory
             'finished_at' => fake()->dateTimeBetween($started, '+6 months')->format('Y-m-d'),
             'actual_started_at' => null,
             'actual_finished_at' => null,
-            'cover' => null,
             'public_token' => ConstructionObject::newPublicToken(),
             'archived_at' => null,
         ];
@@ -76,13 +74,6 @@ class ConstructionObjectFactory extends Factory
             'status' => ObjectStatus::Done,
             'actual_started_at' => $attributes['started_at'] ?? now()->format('Y-m-d'),
             'actual_finished_at' => $attributes['finished_at'] ?? now()->format('Y-m-d'),
-        ]);
-    }
-
-    public function withCover(float $focusX = Cover::FOCUS_CENTER, float $focusY = Cover::FOCUS_CENTER): static
-    {
-        return $this->state(fn (array $attributes): array => [
-            'cover' => (new Cover(bin2hex(random_bytes(12)), 1600, 900, '#7a8b6c'))->withFocus($focusX, $focusY),
         ]);
     }
 

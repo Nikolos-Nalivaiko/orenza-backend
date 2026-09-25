@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Casts\AsCover;
 use App\Enums\ObjectStatus;
 use App\Support\Collation;
 use Database\Factories\ConstructionObjectFactory;
@@ -29,7 +28,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'finished_at',
     'actual_started_at',
     'actual_finished_at',
-    'cover',
     'public_token',
     'archived_at',
 ])]
@@ -52,7 +50,6 @@ class ConstructionObject extends Model
             'actual_started_at' => 'date',
             'actual_finished_at' => 'date',
             'archived_at' => 'datetime',
-            'cover' => AsCover::class,
         ];
     }
 
